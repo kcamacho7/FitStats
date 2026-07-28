@@ -1,4 +1,4 @@
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
@@ -21,10 +21,10 @@ export default function WellnessChart({ data }) {
 
   return (
     <div className="chart-card chart-card-wide">
-      <h3>Fitness (CTL) vs. Fatiga (ATL)</h3>
+      <h3>Fitness (CTL), Fatiga (ATL) y Forma</h3>
       <p className="chart-sub">
-        Datos de intervals.icu desde {rows[0]?.fecha} (fecha de activación de la cuenta). Ambas comparten la misma
-        escala de carga, por eso van en un solo eje.
+        Datos de intervals.icu desde {rows[0]?.fecha} (fecha de activación de la cuenta). Forma = CTL − ATL, comparte
+        la misma escala de carga que las otras dos, por eso las tres van en un solo eje.
       </p>
       <ResponsiveContainer width="100%" height={280}>
         <LineChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
@@ -47,8 +47,10 @@ export default function WellnessChart({ data }) {
             wrapperStyle={{ fontSize: 12, color: 'var(--text-secondary)' }}
             formatter={(value) => <span style={{ color: 'var(--text-secondary)' }}>{value}</span>}
           />
+          <ReferenceLine y={0} stroke="var(--baseline)" strokeDasharray="4 4" />
           <Line type="monotone" dataKey="ctl" name="Fitness (CTL)" stroke="var(--series-1)" strokeWidth={2} dot={false} isAnimationActive={false} />
           <Line type="monotone" dataKey="atl" name="Fatiga (ATL)" stroke="var(--series-2)" strokeWidth={2} dot={false} isAnimationActive={false} />
+          <Line type="monotone" dataKey="form" name="Forma (CTL − ATL)" stroke="var(--series-3)" strokeWidth={2} dot={false} isAnimationActive={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>
