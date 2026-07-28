@@ -1,5 +1,4 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import data from '../data/timeline.json'
 
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
@@ -17,7 +16,7 @@ function ChartTooltip({ active, payload, label }) {
   )
 }
 
-export default function VolumeChart() {
+export default function VolumeChart({ data }) {
   const rows = data.volumen_mensual
 
   return (
@@ -41,7 +40,7 @@ export default function VolumeChart() {
             width={28}
           />
           <Tooltip content={<ChartTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
-          <Bar dataKey="horas" name="Horas" fill="var(--series-1)" radius={[4, 4, 0, 0]} maxBarSize={22} />
+          <Bar dataKey="horas" name="Horas" fill="var(--series-1)" radius={[4, 4, 0, 0]} maxBarSize={22} isAnimationActive={false} />
         </BarChart>
       </ResponsiveContainer>
     </div>

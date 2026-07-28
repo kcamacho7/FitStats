@@ -25,6 +25,22 @@
   min-height: 100vh;
 }
 
+.app-shell-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-text {
+  color: var(--text-secondary, #c3c2b7);
+  font-size: 15px;
+}
+
+.error-text {
+  color: var(--critical, #d03b3b);
+}
+
 main {
   max-width: 1080px;
   margin: 0 auto;

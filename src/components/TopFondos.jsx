@@ -1,6 +1,4 @@
-import data from '../data/timeline.json'
-
-export default function TopFondos() {
+export default function TopFondos({ data }) {
   const fondos = data.top_fondos
 
   return (

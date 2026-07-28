@@ -1,5 +1,3 @@
-import data from '../data/timeline.json'
-
 function diasHasta(fechaISO) {
   const hoy = new Date('2026-07-27')
   const objetivo = new Date(fechaISO)
@@ -7,7 +5,7 @@ function diasHasta(fechaISO) {
   return diff
 }
 
-export default function Hero() {
+export default function Hero({ data }) {
   const { perfil } = data
   const proxima = data.carreras.find((c) => diasHasta(c.proxima_edicion) >= 0)
 

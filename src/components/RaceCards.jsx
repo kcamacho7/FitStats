@@ -1,6 +1,4 @@
-import data from '../data/timeline.json'
-
-export default function RaceCards() {
+export default function RaceCards({ data }) {
   return (
     <section className="section">
       <h2>Líneas base de competencias</h2>

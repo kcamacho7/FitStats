@@ -1,5 +1,3 @@
-import data from '../data/timeline.json'
-
 function estadoDe(row) {
   if (!row.ejecutado) return { label: 'Sin registro', cls: 'estado-critical' }
   if (row.pct_tiempo_ejecutado == null) return { label: 'Ejecutado', cls: 'estado-good' }
@@ -8,7 +6,7 @@ function estadoDe(row) {
   return { label: 'Muy parcial', cls: 'estado-serious' }
 }
 
-export default function PlanVsActual() {
+export default function PlanVsActual({ data }) {
   const rows = [...data.plan_vs_actual].sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
 
   return (

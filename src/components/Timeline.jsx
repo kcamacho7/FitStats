@@ -1,5 +1,3 @@
-import data from '../data/timeline.json'
-
 const TIPO_LABEL = {
   inicio_datos: 'Datos',
   ftp: 'FTP',
@@ -9,7 +7,7 @@ const TIPO_LABEL = {
   volumen_alto: 'Volumen',
 }
 
-export default function Timeline() {
+export default function Timeline({ data }) {
   const hitos = [...data.hitos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
   const hoy = new Date('2026-07-27')
 

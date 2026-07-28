@@ -1,5 +1,4 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import data from '../data/timeline.json'
 
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
@@ -17,7 +16,7 @@ function ChartTooltip({ active, payload, label }) {
   )
 }
 
-export default function EffortChart() {
+export default function EffortChart({ data }) {
   const rows = data.volumen_mensual
 
   return (

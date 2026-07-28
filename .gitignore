@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Datos generados localmente para poblar Supabase — no publicar en el repo público
+src/data/
