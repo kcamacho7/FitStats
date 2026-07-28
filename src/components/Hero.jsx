@@ -11,7 +11,6 @@ export default function Hero({ data }) {
 
   return (
     <header className="hero">
-      <div className="hero-kicker">{perfil.bicicleta.modelo}</div>
       <h1>Evolución de {perfil.nombre.split(' ')[0]}</h1>
       <p className="hero-sub">
         Seguimiento real de rendimiento — datos desde {data.rango_datos.inicio} hasta{' '}
@@ -44,14 +43,6 @@ export default function Hero({ data }) {
             </span>
           </div>
         )}
-      </div>
-
-      <div className="bici-specs">
-        <span>{perfil.bicicleta.cuadro}</span>
-        <span className="dot">·</span>
-        <span>{perfil.bicicleta.transmision}</span>
-        <span className="dot">·</span>
-        <span>{perfil.bicicleta.ruedas}</span>
       </div>
     </header>
   )

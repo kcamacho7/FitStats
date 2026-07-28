@@ -12,6 +12,7 @@ import Login from './components/Login'
 import Settings from './components/Settings'
 import { useAuth } from './hooks/useAuth'
 import { useCiclismoData } from './hooks/useCiclismoData'
+import logoIcon from './assets/logo-icon.png'
 import './App.css'
 
 function App() {
@@ -51,14 +52,20 @@ function App() {
   return (
     <div className="app-shell">
       <div className="topbar">
-        <span className="topbar-user">{user.email}</span>
-        <div className="topbar-actions">
-          <button type="button" className="login-switch" onClick={() => setMostrarConfig(true)}>
-            Configuración
-          </button>
-          <button type="button" className="login-switch" onClick={signOut}>
-            Cerrar sesión
-          </button>
+        <div className="topbar-brand">
+          <img src={logoIcon} alt="FitStats" className="topbar-logo" />
+          <span className="topbar-brand-name">FitStats</span>
+        </div>
+        <div className="topbar-right">
+          <span className="topbar-user">{user.email}</span>
+          <div className="topbar-actions">
+            <button type="button" className="login-switch" onClick={() => setMostrarConfig(true)}>
+              Configuración
+            </button>
+            <button type="button" className="login-switch" onClick={signOut}>
+              Cerrar sesión
+            </button>
+          </div>
         </div>
       </div>
 

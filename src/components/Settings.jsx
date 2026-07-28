@@ -1,14 +1,43 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import Spinner from './Spinner'
 
 const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
+
+function StravaIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <polygon fill="#FC4C02" points="7.5,0.8 2.2,10.6 5.5,10.6 7.5,6.9 9.5,10.6 12.8,10.6" />
+      <polygon fill="#FC4C02" points="10.6,10.6 9.2,13.2 7.9,10.6 5.1,10.6 9.2,17.8 13.4,10.6" />
+    </svg>
+  )
+}
+
+function IntervalsIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <circle cx="9" cy="9" r="8" fill="none" stroke="var(--series-1)" strokeWidth="1.6" />
+      <polyline
+        points="3.5,9.5 6,9.5 7.2,6 9.5,12.5 10.8,9.5 14.5,9.5"
+        fill="none"
+        stroke="var(--series-1)"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
 
 export default function Settings({ onClose, onSynced, avisoInicial }) {
   const [apiKey, setApiKey] = useState('')
   const [athleteId, setAthleteId] = useState('')
   const [estadoIntervals, setEstadoIntervals] = useState(null)
   const [estadoStrava, setEstadoStrava] = useState(avisoInicial ?? null)
-  const [cargando, setCargando] = useState(false)
+  const [guardando, setGuardando] = useState(false)
+  const [sincronizandoIntervals, setSincronizandoIntervals] = useState(false)
+  const [conectandoStrava, setConectandoStrava] = useState(false)
+  const [sincronizandoStrava, setSincronizandoStrava] = useState(false)
 
   const llamarFuncion = async (nombre, body) => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -27,7 +56,7 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
 
   const guardarCredencial = async (e) => {
     e.preventDefault()
-    setCargando(true)
+    setGuardando(true)
     setEstadoIntervals(null)
     try {
       await llamarFuncion('guardar-credencial', {
@@ -40,12 +69,12 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
     } catch (err) {
       setEstadoIntervals({ tipo: 'error', texto: err.message })
     } finally {
-      setCargando(false)
+      setGuardando(false)
     }
   }
 
   const sincronizarIntervals = async () => {
-    setCargando(true)
+    setSincronizandoIntervals(true)
     setEstadoIntervals(null)
     try {
       const data = await llamarFuncion('sincronizar-intervals')
@@ -54,24 +83,24 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
     } catch (err) {
       setEstadoIntervals({ tipo: 'error', texto: err.message })
     } finally {
-      setCargando(false)
+      setSincronizandoIntervals(false)
     }
   }
 
   const conectarStrava = async () => {
-    setCargando(true)
+    setConectandoStrava(true)
     setEstadoStrava(null)
     try {
       const data = await llamarFuncion('iniciar-conexion-strava')
       window.location.href = data.url
     } catch (err) {
       setEstadoStrava({ tipo: 'error', texto: err.message })
-      setCargando(false)
+      setConectandoStrava(false)
     }
   }
 
   const sincronizarStrava = async () => {
-    setCargando(true)
+    setSincronizandoStrava(true)
     setEstadoStrava(null)
     try {
       const data = await llamarFuncion('sincronizar-strava')
@@ -83,7 +112,7 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
     } catch (err) {
       setEstadoStrava({ tipo: 'error', texto: err.message })
     } finally {
-      setCargando(false)
+      setSincronizandoStrava(false)
     }
   }
 
@@ -98,7 +127,9 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
         </div>
 
         <section className="settings-section">
-          <h3 className="settings-section-title">Strava</h3>
+          <h3 className="settings-section-title">
+            <StravaIcon /> Strava
+          </h3>
           <p className="section-sub">
             Conectá tu cuenta de Strava para traer volumen mensual y tus fondos más largos. El token queda cifrado,
             nunca visible en el navegador.
@@ -109,17 +140,31 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
             </p>
           )}
           <div className="settings-actions">
-            <button type="button" className="login-btn" disabled={cargando} onClick={conectarStrava}>
+            <button
+              type="button"
+              className="login-btn"
+              disabled={conectandoStrava || sincronizandoStrava}
+              onClick={conectarStrava}
+            >
+              {conectandoStrava && <Spinner />}
               Conectar con Strava
             </button>
-            <button type="button" className="login-btn login-btn-secondary" disabled={cargando} onClick={sincronizarStrava}>
+            <button
+              type="button"
+              className="login-btn login-btn-secondary"
+              disabled={conectandoStrava || sincronizandoStrava}
+              onClick={sincronizarStrava}
+            >
+              {sincronizandoStrava && <Spinner />}
               Sincronizar ahora
             </button>
           </div>
         </section>
 
         <section className="settings-section">
-          <h3 className="settings-section-title">intervals.icu</h3>
+          <h3 className="settings-section-title">
+            <IntervalsIcon /> intervals.icu
+          </h3>
           <p className="section-sub">
             Conectá tu cuenta para traer tu Fitness/Fatiga/Forma automáticamente. Tu API key se guarda cifrada — nunca
             queda visible en el navegador ni en la base de datos en texto plano.
@@ -156,10 +201,17 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
             )}
 
             <div className="settings-actions">
-              <button type="submit" className="login-btn" disabled={cargando}>
+              <button type="submit" className="login-btn" disabled={guardando || sincronizandoIntervals}>
+                {guardando && <Spinner />}
                 Guardar credencial
               </button>
-              <button type="button" className="login-btn login-btn-secondary" disabled={cargando} onClick={sincronizarIntervals}>
+              <button
+                type="button"
+                className="login-btn login-btn-secondary"
+                disabled={guardando || sincronizandoIntervals}
+                onClick={sincronizarIntervals}
+              >
+                {sincronizandoIntervals && <Spinner />}
                 Sincronizar ahora
               </button>
             </div>
