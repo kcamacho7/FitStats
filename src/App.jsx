@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import Hero from './components/Hero'
 import Timeline from './components/Timeline'
 import VolumeChart from './components/VolumeChart'
@@ -7,67 +8,114 @@ import RaceCards from './components/RaceCards'
 import PlanVsActual from './components/PlanVsActual'
 import WellnessStats from './components/WellnessStats'
 import WellnessChart from './components/WellnessChart'
+import Login from './components/Login'
+import Settings from './components/Settings'
+import { useAuth } from './hooks/useAuth'
 import { useCiclismoData } from './hooks/useCiclismoData'
 import './App.css'
 
 function App() {
-  const { data, error, loading } = useCiclismoData()
+  const { session, loading: authLoading, user, signIn, signUp, signOut } = useAuth()
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [mostrarConfig, setMostrarConfig] = useState(false)
+  const { data, error, loading } = useCiclismoData(user?.id, refreshKey)
 
-  if (loading) {
+  if (authLoading) {
     return (
       <div className="app-shell app-shell-center">
-        <p className="loading-text">Cargando datos desde Supabase…</p>
+        <p className="loading-text">Cargando…</p>
       </div>
     )
   }
 
-  if (error) {
-    return (
-      <div className="app-shell app-shell-center">
-        <p className="loading-text error-text">
-          No se pudo cargar la información ({error.message}). Revisá la consola o intentá de nuevo.
-        </p>
-      </div>
-    )
+  if (!session) {
+    return <Login onSignIn={signIn} onSignUp={signUp} />
   }
 
   return (
     <div className="app-shell">
-      <Hero data={data} />
+      <div className="topbar">
+        <span className="topbar-user">{user.email}</span>
+        <div className="topbar-actions">
+          <button type="button" className="login-switch" onClick={() => setMostrarConfig(true)}>
+            Configuración
+          </button>
+          <button type="button" className="login-switch" onClick={signOut}>
+            Cerrar sesión
+          </button>
+        </div>
+      </div>
 
-      <main>
-        <section className="section">
-          <h2>Estado físico</h2>
-          <p className="section-sub">
-            Fitness/Fatiga/Forma calculados desde tu histórico de entrenamiento — lo más dinámico día a día. Sin
-            datos de sueño, HRV o FC en reposo — tu cuenta no los tiene registrados todavía.
+      {loading && (
+        <div className="app-shell-center">
+          <p className="loading-text">Cargando tus datos…</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="app-shell-center">
+          <p className="loading-text error-text">
+            No se pudo cargar la información ({error.message}).
           </p>
-          <WellnessStats data={data} />
-          <WellnessChart data={data} />
-        </section>
+        </div>
+      )}
 
-        <Timeline data={data} />
+      {!loading && !error && data && !data.tienePerfil && (
+        <div className="app-shell-center onboarding">
+          <h1>¡Bienvenido!</h1>
+          <p className="hero-sub">
+            Todavía no tenés datos conectados. Andá a <strong>Configuración</strong> para guardar tu API key de
+            intervals.icu y sincronizar tu Fitness/Fatiga/Forma.
+          </p>
+          <button type="button" className="login-btn" onClick={() => setMostrarConfig(true)}>
+            Abrir Configuración
+          </button>
+        </div>
+      )}
 
-        <section className="section">
-          <h2>Volumen y carga de entrenamiento</h2>
-          <p className="section-sub">18 meses de datos reales, mes a mes.</p>
-          <div className="chart-grid">
-            <VolumeChart data={data} />
-            <EffortChart data={data} />
-          </div>
-        </section>
+      {!loading && !error && data && data.tienePerfil && (
+        <>
+          <Hero data={data} />
 
-        <RaceCards data={data} />
-        <TopFondos data={data} />
-        <PlanVsActual data={data} />
-      </main>
+          <main>
+            <section className="section">
+              <h2>Estado físico</h2>
+              <p className="section-sub">
+                Fitness/Fatiga/Forma calculados desde tu histórico de entrenamiento — lo más dinámico día a día. Sin
+                datos de sueño, HRV o FC en reposo si tu cuenta no los tiene registrados todavía.
+              </p>
+              <WellnessStats data={data} />
+              <WellnessChart data={data} />
+            </section>
 
-      <footer className="app-footer">
-        <p>
-          Datos actualizados automáticamente · Generado el{' '}
-          {new Date(data.generado).toLocaleDateString('es-CR', { year: 'numeric', month: 'long', day: 'numeric' })}
-        </p>
-      </footer>
+            <Timeline data={data} />
+
+            <section className="section">
+              <h2>Volumen y carga de entrenamiento</h2>
+              <p className="section-sub">18 meses de datos reales, mes a mes.</p>
+              <div className="chart-grid">
+                <VolumeChart data={data} />
+                <EffortChart data={data} />
+              </div>
+            </section>
+
+            <RaceCards data={data} />
+            <TopFondos data={data} />
+            <PlanVsActual data={data} />
+          </main>
+
+          <footer className="app-footer">
+            <p>
+              Datos actualizados automáticamente · Generado el{' '}
+              {new Date(data.generado).toLocaleDateString('es-CR', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+          </footer>
+        </>
+      )}
+
+      {mostrarConfig && (
+        <Settings onClose={() => setMostrarConfig(false)} onSynced={() => setRefreshKey((k) => k + 1)} />
+      )}
     </div>
   )
 }
