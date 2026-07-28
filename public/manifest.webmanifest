@@ -1,0 +1,25 @@
+{
+  "name": "FitStats",
+  "short_name": "FitStats",
+  "description": "Seguimiento de rendimiento deportivo — Strava, intervals.icu y más, en un solo lugar.",
+  "start_url": "/FitStats/",
+  "scope": "/FitStats/",
+  "display": "standalone",
+  "background_color": "#1b2530",
+  "theme_color": "#1b2530",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
