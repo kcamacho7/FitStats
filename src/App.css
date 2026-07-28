@@ -164,15 +164,11 @@ main {
   max-width: 720px;
 }
 
-/* ---------- Timeline horizontal (arrastre con mouse, sin scrollbar visible) ---------- */
+/* ---------- Timeline horizontal (desplazamiento al pasar el mouse, sin scrollbar visible) ---------- */
 .timeline-h-track {
   position: relative;
   overflow-x: auto;
   overflow-y: hidden;
-  cursor: grab;
-  -webkit-user-select: none;
-  user-select: none;
-  touch-action: pan-y;
   padding: 8px 4px 20px;
   margin: 0 -4px;
   scrollbar-width: none;
@@ -182,10 +178,6 @@ main {
 .timeline-h-track::-webkit-scrollbar {
   display: none;
   height: 0;
-}
-
-.timeline-h-track.is-dragging {
-  cursor: grabbing;
 }
 
 .timeline-h-line {
@@ -258,7 +250,6 @@ main {
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px 16px;
-  pointer-events: none; /* el drag es el gesto principal; evita seleccionar texto sin querer */
 }
 
 .timeline-meta {

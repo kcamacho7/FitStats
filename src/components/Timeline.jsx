@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 const TIPO_LABEL = {
   inicio_datos: 'Datos',
@@ -14,61 +14,66 @@ const formatMesAno = (fechaISO) => {
   return texto.charAt(0).toUpperCase() + texto.slice(1).replace('.', '')
 }
 
+// Zona muerta central: quieta si el mouse está cerca del medio, para no scrollear por accidente
+// al solo pasar por encima de una tarjeta del centro.
+const ZONA_MUERTA = 0.12
+
 export default function Timeline({ data }) {
   const hitos = [...data.hitos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
   const hoy = new Date('2026-07-27')
 
   const trackRef = useRef(null)
-  const drag = useRef({ active: false, startX: 0, startScroll: 0, moved: false })
-  const [isDragging, setIsDragging] = useState(false)
+  const targetRatio = useRef(null) // -1..1, null = sin movimiento
+  const rafId = useRef(null)
 
-  const onPointerDown = (e) => {
+  const tick = () => {
+    const track = trackRef.current
+    if (track && targetRatio.current !== null) {
+      const maxScroll = track.scrollWidth - track.clientWidth
+      const velocidadMax = 14 // px por frame en el borde
+      track.scrollLeft += targetRatio.current * velocidadMax
+      if (track.scrollLeft < 0) track.scrollLeft = 0
+      if (track.scrollLeft > maxScroll) track.scrollLeft = maxScroll
+    }
+    rafId.current = requestAnimationFrame(tick)
+  }
+
+  useEffect(() => {
+    rafId.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(rafId.current)
+  }, [])
+
+  const onMouseMove = (e) => {
     const track = trackRef.current
     if (!track) return
-    drag.current = {
-      active: true,
-      startX: e.clientX,
-      startScroll: track.scrollLeft,
-      moved: false,
+    const rect = track.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width // 0..1
+    const centrado = (x - 0.5) * 2 // -1..1
+    if (Math.abs(centrado) < ZONA_MUERTA) {
+      targetRatio.current = null
+      return
     }
-    setIsDragging(true)
-    track.setPointerCapture(e.pointerId)
+    // Reescala para que justo después de la zona muerta ya empiece a moverse notoriamente
+    const signo = Math.sign(centrado)
+    const magnitud = (Math.abs(centrado) - ZONA_MUERTA) / (1 - ZONA_MUERTA)
+    targetRatio.current = signo * magnitud
   }
 
-  const onPointerMove = (e) => {
-    if (!drag.current.active || !trackRef.current) return
-    const delta = e.clientX - drag.current.startX
-    if (Math.abs(delta) > 3) drag.current.moved = true
-    trackRef.current.scrollLeft = drag.current.startScroll - delta
-  }
-
-  const endDrag = () => {
-    drag.current.active = false
-    setIsDragging(false)
-  }
-
-  // Evita que un drag se interprete como click en un hito (no hay links por ahora, pero deja la puerta abierta).
-  const onClickCapture = (e) => {
-    if (drag.current.moved) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
+  const onMouseLeave = () => {
+    targetRatio.current = null
   }
 
   return (
     <section className="section">
       <h2>Línea de tiempo</h2>
       <p className="section-sub">
-        Hitos reales extraídos del histórico de Strava, FTP y calendario de competencias. Arrastrá con el mouse para desplazarte.
+        Hitos reales extraídos del histórico de Strava, FTP y calendario de competencias. Movés el mouse hacia los bordes para desplazarte.
       </p>
       <div
         ref={trackRef}
-        className={`timeline-h-track${isDragging ? ' is-dragging' : ''}`}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerLeave={endDrag}
-        onClickCapture={onClickCapture}
+        className="timeline-h-track"
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
       >
         <div className="timeline-h-line" />
         <ol className="timeline-h">
