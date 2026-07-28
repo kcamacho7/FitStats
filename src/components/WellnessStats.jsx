@@ -27,7 +27,7 @@ export default function WellnessStats({ data }) {
         <span className={`estado-badge ${forma.cls}`}>{forma.texto}</span>
       </div>
       <div className="stat-tile">
-        <span className="stat-label">eFTP (intervals.icu)</span>
+        <span className="stat-label">eFTP estimado</span>
         <span className="stat-value">
           {ultimo.eftp_w}<span className="stat-unit">W</span>
         </span>

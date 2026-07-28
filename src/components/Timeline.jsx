@@ -84,7 +84,7 @@ export default function Timeline({ data }) {
     <section className="section">
       <h2>Línea de tiempo</h2>
       <p className="section-sub">
-        Hitos reales extraídos del histórico de Strava, FTP y calendario de competencias. Movés el mouse hacia los
+        Hitos reales extraídos del histórico de entrenamiento, FTP y calendario de competencias. Movés el mouse hacia los
         bordes para desplazarte, hacé click para pausar/reanudar{isFrozen ? ' (en pausa)' : ''}.
       </p>
       <div

@@ -22,7 +22,7 @@ export default function EffortChart({ data }) {
   return (
     <div className="chart-card">
       <h3>Carga de entrenamiento (Relative Effort) por mes</h3>
-      <p className="chart-sub">Suma mensual del Relative Effort de Strava. Sirve para ver tendencia, no es comparable 1:1 con el TSS de TrainingPeaks.</p>
+      <p className="chart-sub">Suma mensual del Relative Effort. Sirve para ver tendencia, no es comparable 1:1 con el TSS del plan de entrenamiento.</p>
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--gridline)" vertical={false} />

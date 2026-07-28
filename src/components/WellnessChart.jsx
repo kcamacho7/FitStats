@@ -23,7 +23,7 @@ export default function WellnessChart({ data }) {
     <div className="chart-card chart-card-wide">
       <h3>Fitness (CTL), Fatiga (ATL) y Forma</h3>
       <p className="chart-sub">
-        Datos de intervals.icu desde {rows[0]?.fecha} (fecha de activación de la cuenta). Forma = CTL − ATL, comparte
+        Datos desde {rows[0]?.fecha} (fecha de activación de la cuenta). Forma = CTL − ATL, comparte
         la misma escala de carga que las otras dos, por eso las tres van en un solo eje.
       </p>
       <ResponsiveContainer width="100%" height={280}>

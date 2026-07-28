@@ -14,7 +14,7 @@ export default function Hero({ data }) {
       <div className="hero-kicker">{perfil.bicicleta.modelo}</div>
       <h1>Evolución de {perfil.nombre.split(' ')[0]}</h1>
       <p className="hero-sub">
-        Seguimiento real de rendimiento — datos de Strava desde {data.rango_datos.inicio} hasta{' '}
+        Seguimiento real de rendimiento — datos desde {data.rango_datos.inicio} hasta{' '}
         {data.rango_datos.fin}.
       </p>
 

@@ -11,7 +11,7 @@ export default function PlanVsActual({ data }) {
 
   return (
     <section className="section">
-      <h2>Plan (TrainingPeaks) vs. ejecutado (Strava)</h2>
+      <h2>Plan vs. ejecutado</h2>
       <p className="section-sub">
         30-jun a 27-jul-2026. TSS planificado y Relative Effort real no son la misma métrica/escala — la comparación
         de tiempo es la más confiable.

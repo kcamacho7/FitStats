@@ -37,7 +37,7 @@ function App() {
 
       <main>
         <section className="section">
-          <h2>Estado físico (intervals.icu)</h2>
+          <h2>Estado físico</h2>
           <p className="section-sub">
             Fitness/Fatiga/Forma calculados desde tu histórico de entrenamiento — lo más dinámico día a día. Sin
             datos de sueño, HRV o FC en reposo — tu cuenta no los tiene registrados todavía.
@@ -50,7 +50,7 @@ function App() {
 
         <section className="section">
           <h2>Volumen y carga de entrenamiento</h2>
-          <p className="section-sub">18 meses de datos reales de Strava, mes a mes.</p>
+          <p className="section-sub">18 meses de datos reales, mes a mes.</p>
           <div className="chart-grid">
             <VolumeChart data={data} />
             <EffortChart data={data} />
@@ -64,7 +64,7 @@ function App() {
 
       <footer className="app-footer">
         <p>
-          Datos: Strava API + TrainingPeaks (Gmail), vía Supabase · Generado el{' '}
+          Datos actualizados automáticamente · Generado el{' '}
           {new Date(data.generado).toLocaleDateString('es-CR', { year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </footer>
