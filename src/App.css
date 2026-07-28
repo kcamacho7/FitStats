@@ -181,6 +181,14 @@ main {
   height: 0;
 }
 
+.timeline-h-track.is-frozen {
+  cursor: pointer;
+}
+
+.timeline-h-track.is-frozen .timeline-h-line {
+  background: var(--accent);
+}
+
 .timeline-h-line {
   position: absolute;
   left: 4px;

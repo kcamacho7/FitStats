@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const TIPO_LABEL = {
   inicio_datos: 'Datos',
@@ -25,10 +25,12 @@ export default function Timeline({ data }) {
   const trackRef = useRef(null)
   const targetRatio = useRef(null) // -1..1, null = sin movimiento
   const rafId = useRef(null)
+  const frozen = useRef(false)
+  const [isFrozen, setIsFrozen] = useState(false)
 
   const tick = () => {
     const track = trackRef.current
-    if (track && targetRatio.current !== null) {
+    if (track && !frozen.current && targetRatio.current !== null) {
       const maxScroll = track.scrollWidth - track.clientWidth
       const velocidadMax = 14 // px por frame en el borde
       track.scrollLeft += targetRatio.current * velocidadMax
@@ -63,17 +65,35 @@ export default function Timeline({ data }) {
     targetRatio.current = null
   }
 
+  const mouseDownPos = useRef({ x: 0, y: 0 })
+
+  const onMouseDown = (e) => {
+    mouseDownPos.current = { x: e.clientX, y: e.clientY }
+  }
+
+  const onMouseUp = (e) => {
+    const dx = e.clientX - mouseDownPos.current.x
+    const dy = e.clientY - mouseDownPos.current.y
+    if (Math.hypot(dx, dy) > 5) return // fue un gesto de selección de texto, no un click
+
+    frozen.current = !frozen.current
+    setIsFrozen(frozen.current)
+  }
+
   return (
     <section className="section">
       <h2>Línea de tiempo</h2>
       <p className="section-sub">
-        Hitos reales extraídos del histórico de Strava, FTP y calendario de competencias. Movés el mouse hacia los bordes para desplazarte.
+        Hitos reales extraídos del histórico de Strava, FTP y calendario de competencias. Movés el mouse hacia los
+        bordes para desplazarte, hacé click para pausar/reanudar{isFrozen ? ' (en pausa)' : ''}.
       </p>
       <div
         ref={trackRef}
-        className="timeline-h-track"
+        className={`timeline-h-track${isFrozen ? ' is-frozen' : ''}`}
         onMouseMove={onMouseMove}
         onMouseLeave={onMouseLeave}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
       >
         <div className="timeline-h-line" />
         <ol className="timeline-h">
