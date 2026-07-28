@@ -30,18 +30,18 @@
      sin usar ninguna imagen ni logo de la marca real. */
   background-color: var(--page);
   background-image:
-    radial-gradient(ellipse 1000px 560px at 88% -10%, rgba(230, 103, 103, 0.22), transparent 62%),
-    radial-gradient(ellipse 800px 480px at 4% 22%, rgba(57, 135, 229, 0.14), transparent 68%),
-    linear-gradient(27deg, #1c1c1a 5px, transparent 5px) 0 5px,
-    linear-gradient(207deg, #1c1c1a 5px, transparent 5px) 10px 0,
-    linear-gradient(27deg, #262624 5px, transparent 5px) 0 10px,
-    linear-gradient(207deg, #262624 5px, transparent 5px) 10px 5px,
-    linear-gradient(90deg, #1e1e1c 10px, transparent 10px),
-    linear-gradient(#201f1d 25%, #171716 25%, #171716 50%, transparent 50%, transparent 75%, #221f1e 75%);
+    radial-gradient(ellipse 1200px 680px at 90% -12%, rgba(230, 103, 103, 0.38), transparent 60%),
+    radial-gradient(ellipse 900px 560px at 2% 20%, rgba(57, 135, 229, 0.24), transparent 65%),
+    linear-gradient(27deg, #262622 7px, transparent 7px) 0 7px,
+    linear-gradient(207deg, #262622 7px, transparent 7px) 14px 0,
+    linear-gradient(27deg, #322f29 7px, transparent 7px) 0 14px,
+    linear-gradient(207deg, #322f29 7px, transparent 7px) 14px 7px,
+    linear-gradient(90deg, #201e1a 14px, transparent 14px),
+    linear-gradient(#282520 25%, #17150f 25%, #17150f 50%, transparent 50%, transparent 75%, #2a2621 75%);
   background-size:
     auto,
     auto,
-    20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px;
+    28px 28px, 28px 28px, 28px 28px, 28px 28px, 28px 28px, 28px 28px;
   background-attachment: fixed;
 }
 
