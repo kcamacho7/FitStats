@@ -164,36 +164,60 @@ main {
   max-width: 720px;
 }
 
-/* ---------- Timeline ---------- */
-.timeline {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+/* ---------- Timeline horizontal (arrastre con mouse, sin scrollbar visible) ---------- */
+.timeline-h-track {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: pan-y;
+  padding: 8px 4px 20px;
+  margin: 0 -4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.timeline::before {
-  content: "";
+.timeline-h-track::-webkit-scrollbar {
+  display: none;
+  height: 0;
+}
+
+.timeline-h-track.is-dragging {
+  cursor: grabbing;
+}
+
+.timeline-h-line {
   position: absolute;
-  left: 5px;
-  top: 6px;
-  bottom: 6px;
-  width: 2px;
+  left: 4px;
+  right: 4px;
+  top: 54px;
+  height: 2px;
   background: var(--baseline);
 }
 
-.timeline-item {
+.timeline-h {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 28px;
   position: relative;
-  padding-left: 28px;
+  width: max-content;
 }
 
-.timeline-marker {
+.timeline-h-item {
+  position: relative;
+  padding-top: 40px;
+  width: 240px;
+  flex: 0 0 auto;
+}
+
+.timeline-h-marker {
   position: absolute;
   left: 0;
-  top: 4px;
+  top: 48px;
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -202,17 +226,25 @@ main {
   box-shadow: 0 0 0 2px var(--baseline);
 }
 
-.timeline-item.tipo-carrera .timeline-marker,
-.timeline-item.tipo-proxima_carrera .timeline-marker {
+.timeline-h-item.tipo-carrera .timeline-h-marker,
+.timeline-h-item.tipo-proxima_carrera .timeline-h-marker {
   background: var(--accent);
 }
 
-.timeline-item.tipo-ftp .timeline-marker {
+.timeline-h-item.tipo-ftp .timeline-h-marker {
   background: var(--good);
 }
 
-.timeline-item.es-futuro {
+.timeline-h-item.es-futuro {
   opacity: 0.75;
+}
+
+.timeline-h-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  pointer-events: none; /* el drag es el gesto principal; evita seleccionar texto sin querer */
 }
 
 .timeline-meta {
@@ -238,16 +270,17 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
-.timeline-body h3 {
-  font-size: 16px;
+.timeline-h-card h3 {
+  font-size: 15px;
   font-weight: 600;
   margin-bottom: 4px;
+  line-height: 1.25;
 }
 
-.timeline-body p {
-  font-size: 14px;
+.timeline-h-card p {
+  font-size: 13px;
   color: var(--text-secondary);
-  max-width: 640px;
+  line-height: 1.4;
 }
 
 /* ---------- Charts ---------- */
