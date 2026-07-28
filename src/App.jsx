@@ -7,7 +7,6 @@ import VolumenPorDeporte from './components/VolumenPorDeporte'
 import TopFondos from './components/TopFondos'
 import RaceCards from './components/RaceCards'
 import PlanVsActual from './components/PlanVsActual'
-import Objetivos from './components/Objetivos'
 import WellnessStats from './components/WellnessStats'
 import WellnessChart from './components/WellnessChart'
 import Login from './components/Login'
@@ -147,8 +146,6 @@ function App() {
               )}
             </section>
 
-            <Objetivos data={data} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
-
             {data.hitos.length > 0 && <Timeline data={data} />}
 
             {data.volumen_mensual.length > 0 && (
@@ -163,7 +160,7 @@ function App() {
               </section>
             )}
 
-            {data.carreras.length > 0 && <RaceCards data={data} />}
+            <RaceCards data={data} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
             {data.top_fondos.length > 0 && <TopFondos data={data} />}
             {data.plan_vs_actual.length > 0 && <PlanVsActual data={data} />}
           </main>

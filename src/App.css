@@ -400,40 +400,7 @@ main {
   gap: 14px;
 }
 
-/* ---------- Objetivos ---------- */
-.objetivos-lista {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.objetivo-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 20px;
-}
-
-.objetivo-card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.objetivo-card-header h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.objetivo-referencia {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-}
-
+/* ---------- Formulario de alta (competencias) ---------- */
 .objetivo-form {
   background: var(--surface);
   border: 1px solid var(--border);

@@ -23,9 +23,9 @@ function diasHasta(fechaISO) {
 
 export default function Hero({ data }) {
   const { perfil } = data
-  const proximo = [...data.objetivos]
-    .filter((o) => diasHasta(o.fecha) >= 0)
-    .sort((a, b) => new Date(a.fecha) - new Date(b.fecha))[0]
+  const proximo = [...data.carreras]
+    .filter((c) => diasHasta(c.proxima_edicion) >= 0)
+    .sort((a, b) => new Date(a.proxima_edicion) - new Date(b.proxima_edicion))[0]
 
   const tieneFtp = perfil.ftp_actual_w != null
   const tieneWkg = perfil.wkg_actual != null
@@ -70,9 +70,9 @@ export default function Hero({ data }) {
         {proximo && (
           <div className="stat-tile">
             <span className="stat-label">Próximo objetivo</span>
-            <span className="stat-value stat-value-sm">{proximo.nombre}</span>
+            <span className="stat-value stat-value-sm">{proximo.carrera}</span>
             <span className="stat-delta">
-              {diasHasta(proximo.fecha)} días · {proximo.fecha}
+              {diasHasta(proximo.proxima_edicion)} días · {proximo.proxima_edicion}
             </span>
             {ctlReciente.length > 1 && (
               <div className="hero-goal-chart">
