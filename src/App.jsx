@@ -36,6 +36,16 @@ function App() {
       <Hero data={data} />
 
       <main>
+        <section className="section">
+          <h2>Estado físico (intervals.icu)</h2>
+          <p className="section-sub">
+            Fitness/Fatiga/Forma calculados desde tu histórico de entrenamiento — lo más dinámico día a día. Sin
+            datos de sueño, HRV o FC en reposo — tu cuenta no los tiene registrados todavía.
+          </p>
+          <WellnessStats data={data} />
+          <WellnessChart data={data} />
+        </section>
+
         <Timeline data={data} />
 
         <section className="section">
@@ -45,16 +55,6 @@ function App() {
             <VolumeChart data={data} />
             <EffortChart data={data} />
           </div>
-        </section>
-
-        <section className="section">
-          <h2>Estado físico (intervals.icu)</h2>
-          <p className="section-sub">
-            Fitness/Fatiga/Forma calculados desde tu histórico de entrenamiento. Sin datos de sueño, HRV o FC en
-            reposo — tu cuenta no los tiene registrados todavía.
-          </p>
-          <WellnessStats data={data} />
-          <WellnessChart data={data} />
         </section>
 
         <RaceCards data={data} />
