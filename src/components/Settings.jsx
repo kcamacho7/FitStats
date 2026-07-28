@@ -38,6 +38,7 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
   const [sincronizandoIntervals, setSincronizandoIntervals] = useState(false)
   const [conectandoStrava, setConectandoStrava] = useState(false)
   const [sincronizandoStrava, setSincronizandoStrava] = useState(false)
+  const [trayendoHistorico, setTrayendoHistorico] = useState(false)
 
   const llamarFuncion = async (nombre, body) => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -119,6 +120,23 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
     }
   }
 
+  const traerHistoricoStrava = async () => {
+    setTrayendoHistorico(true)
+    setEstadoStrava(null)
+    try {
+      const data = await llamarFuncion('sincronizar-strava', { forzar_historico: true })
+      setEstadoStrava({
+        tipo: 'ok',
+        texto: `Histórico completo (${data.meses.length} mes(es)): ${data.salidas} salidas, ${data.km} km, ${data.horas} h. ${data.fondosNuevos ? `${data.fondosNuevos} fondo(s) en el top.` : ''}`,
+      })
+      onSynced?.()
+    } catch (err) {
+      setEstadoStrava({ tipo: 'error', texto: err.message })
+    } finally {
+      setTrayendoHistorico(false)
+    }
+  }
+
   return (
     <div className="settings-overlay" onClick={onClose}>
       <div className="settings-card" onClick={(e) => e.stopPropagation()}>
@@ -155,13 +173,26 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
             <button
               type="button"
               className="login-btn login-btn-secondary"
-              disabled={conectandoStrava || sincronizandoStrava}
+              disabled={conectandoStrava || sincronizandoStrava || trayendoHistorico}
               onClick={sincronizarStrava}
             >
               {sincronizandoStrava && <Spinner />}
               Sincronizar ahora
             </button>
+            <button
+              type="button"
+              className="login-btn login-btn-secondary"
+              disabled={conectandoStrava || sincronizandoStrava || trayendoHistorico}
+              onClick={traerHistoricoStrava}
+            >
+              {trayendoHistorico && <Spinner />}
+              Traer historial completo
+            </button>
           </div>
+          <p className="chart-sub" style={{ marginTop: 8 }}>
+            Usá "Traer historial completo" si notás que faltan meses o salidas viejas — vuelve a traer todo desde
+            Strava sin duplicar nada.
+          </p>
         </section>
 
         <section className="settings-section">
