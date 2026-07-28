@@ -8,13 +8,16 @@ function estadoDe(row) {
 
 export default function PlanVsActual({ data }) {
   const rows = [...data.plan_vs_actual].sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+  const fechas = rows.map((r) => r.fecha).filter(Boolean)
+  const desde = fechas.length > 0 ? fechas[fechas.length - 1] : null
+  const hasta = fechas.length > 0 ? fechas[0] : null
 
   return (
     <section className="section">
       <h2>Plan vs. ejecutado</h2>
       <p className="section-sub">
-        30-jun a 27-jul-2026. TSS planificado y Relative Effort real no son la misma métrica/escala — la comparación
-        de tiempo es la más confiable.
+        {desde && hasta ? `${desde} a ${hasta}. ` : ''}TSS planificado y Relative Effort real no son la misma
+        métrica/escala — la comparación de tiempo es la más confiable.
       </p>
       <div className="table-wrap">
         <table className="data-table">
