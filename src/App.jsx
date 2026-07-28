@@ -21,6 +21,7 @@ import './App.css'
 
 const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
 const ADMIN_USER_ID = '2e46f380-ad94-4d76-9571-822804e6049a'
+const DEPORTES_CICLISMO = ['Ride', 'VirtualRide', 'EBikeRide']
 
 function App() {
   const { session, loading: authLoading, user, signIn, signUp, signInWithGoogle, signOut } = useAuth()
@@ -38,6 +39,12 @@ function App() {
         ...data.carreras.map((r) => r.deporte).filter(Boolean),
       ])].sort()
     : []
+
+  // Plan vs. ejecutado siempre viene de actividades de ciclismo (así funciona el lookup en
+  // Strava tanto del parser de Gmail como del de captura con Claude) — si el filtro de
+  // deporte excluye ciclismo, no tiene sentido mostrar esta sección.
+  const mostrarPlanVsActual =
+    deportesSeleccionados.length === 0 || deportesSeleccionados.some((d) => DEPORTES_CICLISMO.includes(d))
 
   const filtrarPorDeporteSeleccionado = (filas) =>
     deportesSeleccionados.length === 0 ? filas : filas.filter((f) => deportesSeleccionados.includes(f.deporte))
@@ -186,7 +193,9 @@ function App() {
 
             <RaceCards data={dataFiltrada} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
             {dataFiltrada.top_fondos.length > 0 && <MejoresMarcas data={dataFiltrada} />}
-            <PlanVsActual data={data} onCambio={() => setRefreshKey((k) => k + 1)} />
+            {mostrarPlanVsActual && (
+              <PlanVsActual data={data} onCambio={() => setRefreshKey((k) => k + 1)} />
+            )}
           </main>
 
           <footer className="app-footer">
