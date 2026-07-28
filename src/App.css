@@ -21,9 +21,28 @@
   --serious: #ec835a;
   --critical: #d03b3b;
 
-  background: var(--page);
   color: var(--text-primary);
   min-height: 100vh;
+  position: relative;
+
+  /* Fondo "fibra de carbono" + resplandor de acento — look propio inspirado en la estética
+     de la página del fabricante de la bici (negro carbono, foto de detalle sobre gris oscuro),
+     sin usar ninguna imagen ni logo de la marca real. */
+  background-color: var(--page);
+  background-image:
+    radial-gradient(ellipse 1000px 560px at 88% -10%, rgba(230, 103, 103, 0.22), transparent 62%),
+    radial-gradient(ellipse 800px 480px at 4% 22%, rgba(57, 135, 229, 0.14), transparent 68%),
+    linear-gradient(27deg, #1c1c1a 5px, transparent 5px) 0 5px,
+    linear-gradient(207deg, #1c1c1a 5px, transparent 5px) 10px 0,
+    linear-gradient(27deg, #262624 5px, transparent 5px) 0 10px,
+    linear-gradient(207deg, #262624 5px, transparent 5px) 10px 5px,
+    linear-gradient(90deg, #1e1e1c 10px, transparent 10px),
+    linear-gradient(#201f1d 25%, #171716 25%, #171716 50%, transparent 50%, transparent 75%, #221f1e 75%);
+  background-size:
+    auto,
+    auto,
+    20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px, 20px 20px;
+  background-attachment: fixed;
 }
 
 .app-shell-center {
