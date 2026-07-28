@@ -155,7 +155,7 @@ function App() {
 
             <RaceCards data={data} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
             {data.top_fondos.length > 0 && <TopFondos data={data} />}
-            {data.plan_vs_actual.length > 0 && <PlanVsActual data={data} />}
+            <PlanVsActual data={data} onCambio={() => setRefreshKey((k) => k + 1)} />
           </main>
 
           <footer className="app-footer">
