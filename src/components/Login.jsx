@@ -15,6 +15,7 @@ function GoogleIcon() {
 
 export default function Login({ onSignIn, onSignUp, onSignInWithGoogle }) {
   const [modo, setModo] = useState('signin') // 'signin' | 'signup'
+  const [nombre, setNombre] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [mensaje, setMensaje] = useState(null)
@@ -32,7 +33,7 @@ export default function Login({ onSignIn, onSignUp, onSignInWithGoogle }) {
         const { error } = await onSignIn(email, password)
         if (error) throw error
       } else {
-        const { error } = await onSignUp(email, password)
+        const { error } = await onSignUp(email, password, nombre)
         if (error) throw error
         setMensaje('Cuenta creada. Revisá tu correo si hace falta confirmarla, o iniciá sesión directo.')
       }
@@ -56,6 +57,20 @@ export default function Login({ onSignIn, onSignUp, onSignInWithGoogle }) {
         <p className="login-sub">Tu evolución como atleta, en un solo lugar.</p>
 
         <form onSubmit={onSubmit} className="login-form">
+          {modo === 'signup' && (
+            <label className="login-label">
+              Nombre
+              <input
+                type="text"
+                required
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className="login-input"
+                autoComplete="name"
+                placeholder="Tu nombre"
+              />
+            </label>
+          )}
           <label className="login-label">
             Correo
             <input

@@ -400,6 +400,53 @@ main {
   gap: 14px;
 }
 
+/* ---------- Objetivos ---------- */
+.objetivos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.objetivo-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.objetivo-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.objetivo-card-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.objetivo-referencia {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.objetivo-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 420px;
+}
+
+.hero-goal-chart {
+  margin-top: 8px;
+  height: 40px;
+}
+
 .race-stat-label {
   display: block;
   font-size: 11px;
@@ -666,6 +713,15 @@ main {
   cursor: pointer;
   text-decoration: underline;
   padding: 0;
+}
+
+.login-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
 }
 
 /* ---------- Onboarding ---------- */

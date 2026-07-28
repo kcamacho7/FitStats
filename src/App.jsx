@@ -6,11 +6,13 @@ import EffortChart from './components/EffortChart'
 import TopFondos from './components/TopFondos'
 import RaceCards from './components/RaceCards'
 import PlanVsActual from './components/PlanVsActual'
+import Objetivos from './components/Objetivos'
 import WellnessStats from './components/WellnessStats'
 import WellnessChart from './components/WellnessChart'
 import Login from './components/Login'
 import Settings from './components/Settings'
-import { useAuth } from './hooks/useAuth'
+import CompletarPerfil from './components/CompletarPerfil'
+import { useAuth, nombreSugerido } from './hooks/useAuth'
 import { useCiclismoData } from './hooks/useCiclismoData'
 import logoIcon from './assets/logo-icon.png'
 import './App.css'
@@ -84,16 +86,11 @@ function App() {
       )}
 
       {!loading && !error && data && !data.tienePerfil && (
-        <div className="app-shell-center onboarding">
-          <h1>¡Bienvenido!</h1>
-          <p className="hero-sub">
-            Todavía no tenés datos conectados. Andá a <strong>Configuración</strong> para guardar tu API key de
-            intervals.icu y sincronizar tu Fitness/Fatiga/Forma.
-          </p>
-          <button type="button" className="login-btn" onClick={() => setMostrarConfig(true)}>
-            Abrir Configuración
-          </button>
-        </div>
+        <CompletarPerfil
+          user={user}
+          nombreSugeridoInicial={nombreSugerido(user)}
+          onListo={() => setRefreshKey((k) => k + 1)}
+        />
       )}
 
       {!loading && !error && data && data.tienePerfil && (
@@ -103,28 +100,41 @@ function App() {
           <main>
             <section className="section">
               <h2>Estado físico</h2>
-              <p className="section-sub">
-                Fitness/Fatiga/Forma calculados desde tu histórico de entrenamiento — lo más dinámico día a día. Sin
-                datos de sueño, HRV o FC en reposo si tu cuenta no los tiene registrados todavía.
-              </p>
-              <WellnessStats data={data} />
-              <WellnessChart data={data} />
+              {data.wellness_diario.length > 0 ? (
+                <>
+                  <p className="section-sub">
+                    Fitness/Fatiga/Forma calculados desde tu histórico de entrenamiento — lo más dinámico día a día.
+                    Sin datos de sueño, HRV o FC en reposo si tu cuenta no los tiene registrados todavía.
+                  </p>
+                  <WellnessStats data={data} />
+                  <WellnessChart data={data} />
+                </>
+              ) : (
+                <p className="section-sub">
+                  Todavía no hay datos de Fitness/Fatiga. Andá a <strong>Configuración</strong> y conectá Strava o
+                  intervals.icu para empezar a verlos acá.
+                </p>
+              )}
             </section>
 
-            <Timeline data={data} />
+            <Objetivos data={data} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
 
-            <section className="section">
-              <h2>Volumen y carga de entrenamiento</h2>
-              <p className="section-sub">18 meses de datos reales, mes a mes.</p>
-              <div className="chart-grid">
-                <VolumeChart data={data} />
-                <EffortChart data={data} />
-              </div>
-            </section>
+            {data.hitos.length > 0 && <Timeline data={data} />}
 
-            <RaceCards data={data} />
-            <TopFondos data={data} />
-            <PlanVsActual data={data} />
+            {data.volumen_mensual.length > 0 && (
+              <section className="section">
+                <h2>Volumen y carga de entrenamiento</h2>
+                <p className="section-sub">18 meses de datos reales, mes a mes.</p>
+                <div className="chart-grid">
+                  <VolumeChart data={data} />
+                  <EffortChart data={data} />
+                </div>
+              </section>
+            )}
+
+            {data.carreras.length > 0 && <RaceCards data={data} />}
+            {data.top_fondos.length > 0 && <TopFondos data={data} />}
+            {data.plan_vs_actual.length > 0 && <PlanVsActual data={data} />}
           </main>
 
           <footer className="app-footer">
