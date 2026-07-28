@@ -9,6 +9,11 @@ const TIPO_LABEL = {
   volumen_alto: 'Volumen',
 }
 
+const formatMesAno = (fechaISO) => {
+  const texto = new Date(fechaISO).toLocaleDateString('es-CR', { month: 'short', year: 'numeric' })
+  return texto.charAt(0).toUpperCase() + texto.slice(1).replace('.', '')
+}
+
 export default function Timeline({ data }) {
   const hitos = [...data.hitos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha))
   const hoy = new Date('2026-07-27')
@@ -71,6 +76,7 @@ export default function Timeline({ data }) {
             const esFutura = new Date(h.fecha) > hoy
             return (
               <li key={h.fecha + h.titulo} className={`timeline-h-item tipo-${h.tipo}${esFutura ? ' es-futuro' : ''}`}>
+                <div className="timeline-h-mesano">{formatMesAno(h.fecha)}</div>
                 <div className="timeline-h-marker" />
                 <div className="timeline-h-card">
                   <div className="timeline-meta">
