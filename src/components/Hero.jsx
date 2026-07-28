@@ -1,4 +1,4 @@
-import { Line, LineChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { Line, LineChart, ResponsiveContainer, Tooltip, YAxis } from 'recharts'
 
 function MiniTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
@@ -78,6 +78,7 @@ export default function Hero({ data }) {
               <div className="hero-goal-chart">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={ctlReciente} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
+                    <YAxis hide domain={['dataMin - 2', 'dataMax + 2']} />
                     <Tooltip content={<MiniTooltip />} cursor={{ stroke: 'var(--baseline)' }} />
                     <Line
                       type="monotone"
