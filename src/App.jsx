@@ -156,7 +156,9 @@ function App() {
             {data.volumen_mensual.length > 0 && (
               <section className="section">
                 <h2>Volumen y carga de entrenamiento</h2>
-                <p className="section-sub">18 meses de datos reales, mes a mes.</p>
+                <p className="section-sub">
+                  {data.mesesConDatos} mes{data.mesesConDatos === 1 ? '' : 'es'} de datos reales, mes a mes.
+                </p>
                 <div className="chart-grid">
                   <VolumeChart data={data} />
                   <EffortChart data={data} />

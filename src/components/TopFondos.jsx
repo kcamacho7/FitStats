@@ -4,7 +4,10 @@ export default function TopFondos({ data }) {
   return (
     <section className="section">
       <h2>Fondos más largos registrados</h2>
-      <p className="section-sub">Top {fondos.length} salidas por distancia, en los 18 meses de datos disponibles.</p>
+      <p className="section-sub">
+        Top {fondos.length} salidas por distancia, en los {data.mesesConDatos} mes{data.mesesConDatos === 1 ? '' : 'es'}{' '}
+        de datos disponibles.
+      </p>
       <div className="table-wrap">
         <table className="data-table">
           <thead>

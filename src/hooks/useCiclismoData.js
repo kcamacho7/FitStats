@@ -31,10 +31,25 @@ export function useCiclismoData(userId, refreshKey = 0) {
         if (cancelado) return
 
         const p = perfilRes.data
+
+        // El rango de fechas y "meses con datos" se calculan en vivo desde los datos reales
+        // (volumen_mensual/wellness_diario), no desde columnas fijas que nadie vuelve a actualizar.
+        const meses = [...new Set((volumenRes.data || []).map((r) => r.mes))].sort()
+        const mesesConDatos = meses.length
+        const fechasWellness = (wellnessRes.data || []).map((w) => w.fecha).filter(Boolean)
+        const inicio = meses.length > 0 ? `${meses[0]}-01` : null
+        const fin =
+          fechasWellness.length > 0
+            ? fechasWellness.reduce((a, b) => (b > a ? b : a))
+            : meses.length > 0
+              ? new Date().toISOString().slice(0, 10)
+              : null
+
         setData({
           tienePerfil: !!p,
           generado: p?.generado ?? null,
-          rango_datos: p ? { inicio: p.rango_datos_inicio, fin: p.rango_datos_fin } : null,
+          rango_datos: inicio ? { inicio, fin } : null,
+          mesesConDatos,
           perfil: p
             ? {
                 nombre: p.nombre,
