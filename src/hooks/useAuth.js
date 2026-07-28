@@ -14,6 +14,8 @@ export function useAuth() {
 
   const signIn = (email, password) => supabase.auth.signInWithPassword({ email, password })
   const signUp = (email, password) => supabase.auth.signUp({ email, password })
+  const signInWithGoogle = () =>
+    supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + window.location.pathname } })
   const signOut = () => supabase.auth.signOut()
 
   return {
@@ -22,6 +24,7 @@ export function useAuth() {
     user: session?.user ?? null,
     signIn,
     signUp,
+    signInWithGoogle,
     signOut,
   }
 }

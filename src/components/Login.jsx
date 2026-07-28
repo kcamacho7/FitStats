@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function Login({ onSignIn, onSignUp }) {
+export default function Login({ onSignIn, onSignUp, onSignInWithGoogle }) {
   const [modo, setModo] = useState('signin') // 'signin' | 'signup'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -68,6 +68,17 @@ export default function Login({ onSignIn, onSignUp }) {
             {cargando ? 'Un momento…' : modo === 'signin' ? 'Entrar' : 'Crear cuenta'}
           </button>
         </form>
+
+        <div className="login-divider">o</div>
+
+        <button
+          type="button"
+          className="login-btn login-btn-secondary"
+          disabled={cargando}
+          onClick={() => onSignInWithGoogle()}
+        >
+          Continuar con Google
+        </button>
 
         <button
           type="button"

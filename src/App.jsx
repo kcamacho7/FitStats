@@ -15,7 +15,7 @@ import { useCiclismoData } from './hooks/useCiclismoData'
 import './App.css'
 
 function App() {
-  const { session, loading: authLoading, user, signIn, signUp, signOut } = useAuth()
+  const { session, loading: authLoading, user, signIn, signUp, signInWithGoogle, signOut } = useAuth()
   const [refreshKey, setRefreshKey] = useState(0)
   const [mostrarConfig, setMostrarConfig] = useState(false)
   const { data, error, loading } = useCiclismoData(user?.id, refreshKey)
@@ -29,7 +29,7 @@ function App() {
   }
 
   if (!session) {
-    return <Login onSignIn={signIn} onSignUp={signUp} />
+    return <Login onSignIn={signIn} onSignUp={signUp} onSignInWithGoogle={signInWithGoogle} />
   }
 
   return (

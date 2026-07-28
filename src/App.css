@@ -622,6 +622,14 @@ main {
   border: 1px solid var(--border);
 }
 
+.login-divider {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  margin: 14px 0;
+  text-transform: uppercase;
+}
+
 .login-switch {
   background: none;
   border: none;
