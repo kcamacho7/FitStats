@@ -555,9 +555,9 @@ main {
 
 .login-logo {
   display: block;
-  width: 72px;
+  width: 88px;
   height: auto;
-  margin-bottom: 16px;
+  margin: 0 auto 16px;
 }
 
 .login-title {

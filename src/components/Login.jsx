@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import logo from '../assets/logo.png'
+import logo from '../assets/logo-icon.png'
 import Spinner from './Spinner'
 
 function GoogleIcon() {
