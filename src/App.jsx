@@ -3,6 +3,7 @@ import Hero from './components/Hero'
 import Timeline from './components/Timeline'
 import VolumeChart from './components/VolumeChart'
 import EffortChart from './components/EffortChart'
+import VolumenPorDeporte from './components/VolumenPorDeporte'
 import TopFondos from './components/TopFondos'
 import RaceCards from './components/RaceCards'
 import PlanVsActual from './components/PlanVsActual'
@@ -14,8 +15,11 @@ import Settings from './components/Settings'
 import CompletarPerfil from './components/CompletarPerfil'
 import { useAuth, nombreSugerido } from './hooks/useAuth'
 import { useCiclismoData } from './hooks/useCiclismoData'
+import { supabase } from './lib/supabaseClient'
 import logoIcon from './assets/logo-icon.png'
 import './App.css'
+
+const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
 
 function App() {
   const { session, loading: authLoading, user, signIn, signUp, signInWithGoogle, signOut } = useAuth()
@@ -38,6 +42,32 @@ function App() {
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
+
+  // Como el sistema tiene pocos usuarios, en vez de un refresco programado en la nube
+  // se sincroniza Strava/intervals.icu cada vez que el usuario entra a la app.
+  useEffect(() => {
+    if (!user) return
+    let cancelado = false
+
+    const sincronizarAlIngresar = async () => {
+      const { data: { session: s } } = await supabase.auth.getSession()
+      if (!s) return
+      const llamar = (nombre) =>
+        fetch(`${FUNCTIONS_URL}/${nombre}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${s.access_token}` },
+          body: JSON.stringify({}),
+        }).catch(() => null)
+
+      await Promise.all([llamar('sincronizar-strava'), llamar('sincronizar-intervals')])
+      if (!cancelado) setRefreshKey((k) => k + 1)
+    }
+
+    sincronizarAlIngresar()
+    return () => {
+      cancelado = true
+    }
+  }, [user?.id])
 
   if (authLoading) {
     return (
@@ -129,6 +159,7 @@ function App() {
                   <VolumeChart data={data} />
                   <EffortChart data={data} />
                 </div>
+                <VolumenPorDeporte data={data} />
               </section>
             )}
 

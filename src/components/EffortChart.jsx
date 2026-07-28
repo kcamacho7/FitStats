@@ -1,4 +1,5 @@
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { consolidarPorMes, deportesDistintos } from '../lib/deportes'
 
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
@@ -17,12 +18,17 @@ function ChartTooltip({ active, payload, label }) {
 }
 
 export default function EffortChart({ data }) {
-  const rows = data.volumen_mensual
+  const rows = consolidarPorMes(data.volumen_mensual)
+  const multiDeporte = deportesDistintos(data.volumen_mensual).length > 1
 
   return (
     <div className="chart-card">
       <h3>Carga de entrenamiento (Relative Effort) por mes</h3>
-      <p className="chart-sub">Suma mensual del Relative Effort. Sirve para ver tendencia, no es comparable 1:1 con el TSS del plan de entrenamiento.</p>
+      <p className="chart-sub">
+        {multiDeporte
+          ? 'Suma mensual consolidada de todos los deportes. Sirve para ver tendencia, no es comparable 1:1 con el TSS del plan.'
+          : 'Suma mensual del Relative Effort. Sirve para ver tendencia, no es comparable 1:1 con el TSS del plan de entrenamiento.'}
+      </p>
       <ResponsiveContainer width="100%" height={260}>
         <LineChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--gridline)" vertical={false} />

@@ -1,4 +1,5 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { consolidarPorMes, deportesDistintos } from '../lib/deportes'
 
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
@@ -17,12 +18,17 @@ function ChartTooltip({ active, payload, label }) {
 }
 
 export default function VolumeChart({ data }) {
-  const rows = data.volumen_mensual
+  const rows = consolidarPorMes(data.volumen_mensual)
+  const multiDeporte = deportesDistintos(data.volumen_mensual).length > 1
 
   return (
     <div className="chart-card">
-      <h3>Horas de bici por mes</h3>
-      <p className="chart-sub">Ride + VirtualRide (ruta y rodillo/Zwift). La caída dic-2025 a abr-2026 y la recuperación posterior se ven directo acá.</p>
+      <h3>Horas de entrenamiento por mes</h3>
+      <p className="chart-sub">
+        {multiDeporte
+          ? 'Consolidado de todos los deportes registrados. Abajo está el desglose por tipo de actividad.'
+          : 'Ride + VirtualRide (ruta y rodillo/Zwift). La caída dic-2025 a abr-2026 y la recuperación posterior se ven directo acá.'}
+      </p>
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--gridline)" vertical={false} />

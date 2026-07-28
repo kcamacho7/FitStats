@@ -1,4 +1,18 @@
-import { Line, LineChart, ResponsiveContainer } from 'recharts'
+import { Line, LineChart, ResponsiveContainer, Tooltip } from 'recharts'
+
+function MiniTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null
+  return (
+    <div className="chart-tooltip">
+      <div className="chart-tooltip-title">{label}</div>
+      <div className="chart-tooltip-row">
+        <span className="chart-tooltip-swatch" style={{ background: 'var(--series-1)' }} />
+        <span>Fitness (CTL)</span>
+        <strong>{payload[0].value}</strong>
+      </div>
+    </div>
+  )
+}
 
 function diasHasta(fechaISO) {
   const hoy = new Date()
@@ -63,7 +77,8 @@ export default function Hero({ data }) {
             {ctlReciente.length > 1 && (
               <div className="hero-goal-chart">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={ctlReciente}>
+                  <LineChart data={ctlReciente} margin={{ top: 4, right: 4, left: 4, bottom: 0 }}>
+                    <Tooltip content={<MiniTooltip />} cursor={{ stroke: 'var(--baseline)' }} />
                     <Line
                       type="monotone"
                       dataKey="ctl"
