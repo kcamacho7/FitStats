@@ -27,7 +27,7 @@ export default function VolumeChart({ data }) {
       <p className="chart-sub">
         {multiDeporte
           ? 'Consolidado de todos los deportes registrados. Abajo está el desglose por tipo de actividad.'
-          : 'Ride + VirtualRide (ruta y rodillo/Zwift). La caída dic-2025 a abr-2026 y la recuperación posterior se ven directo acá.'}
+          : 'Todas las actividades registradas, mes a mes.'}
       </p>
       <ResponsiveContainer width="100%" height={260}>
         <BarChart data={rows} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>

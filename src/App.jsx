@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Hero from './components/Hero'
 import Timeline from './components/Timeline'
 import VolumenSection from './components/VolumenSection'
-import TopFondos from './components/TopFondos'
+import MejoresMarcas from './components/MejoresMarcas'
 import RaceCards from './components/RaceCards'
 import PlanVsActual from './components/PlanVsActual'
 import WellnessStats from './components/WellnessStats'
@@ -154,7 +154,7 @@ function App() {
             <VolumenSection data={data} />
 
             <RaceCards data={data} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
-            {data.top_fondos.length > 0 && <TopFondos data={data} />}
+            {data.top_fondos.length > 0 && <MejoresMarcas data={data} />}
             <PlanVsActual data={data} onCambio={() => setRefreshKey((k) => k + 1)} />
           </main>
 

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
+import { indicadorSecundario } from '../lib/deportes'
 import Spinner from './Spinner'
 
 const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
@@ -54,57 +55,60 @@ export default function RaceCards({ data, userId, onCambio }) {
     <section className="section">
       <h2>Líneas base de competencias</h2>
       <p className="section-sub">
-        Comparación de potencia promedio contra tu FTP vigente en cada competencia — la referencia contra la que
-        medir el progreso en cada edición.
+        Métricas de referencia de cada competencia — para ciclismo, potencia y %FTP; para otros deportes, distancia,
+        tiempo y ritmo/velocidad.
       </p>
       <div className="race-grid">
-        {data.carreras.map((c) => (
-          <article key={c.id} className="race-card">
-            <header>
-              <h3>{c.carrera}</h3>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className="race-badge">Próxima: {c.proxima_edicion}</span>
-                <button
-                  type="button"
-                  className="settings-close"
-                  onClick={() => eliminar(c.id)}
-                  disabled={borrandoId === c.id}
-                  aria-label="Eliminar competencia"
-                >
-                  {borrandoId === c.id ? <Spinner /> : '✕'}
-                </button>
+        {data.carreras.map((c) => {
+          const ind = indicadorSecundario(c.deporte, { distancia_km: c.distancia_km, moving_time_min: c.tiempo_min })
+          const celdas = [
+            { label: 'Edición 2025', value: valorO(c.fecha_2025) },
+            { label: 'Distancia', value: valorO(c.distancia_km, ' km') },
+            {
+              label: 'Tiempo',
+              value: c.tiempo_min != null ? `${Math.round((c.tiempo_min / 60) * 10) / 10} h` : '—',
+            },
+            {
+              label: 'FC promedio',
+              value: <>{valorO(c.fc_prom)} <span className="unit">bpm</span></>,
+            },
+            ...(c.potencia_prom_w != null
+              ? [{ label: 'Potencia promedio', value: <>{c.potencia_prom_w} <span className="unit">W</span></> }]
+              : []),
+            ...(c.pct_ftp_prom != null
+              ? [{ label: '% FTP real', value: `${c.pct_ftp_prom}%`, accent: true }]
+              : []),
+            ...(ind ? [{ label: ind.label, value: ind.value }] : []),
+          ]
+
+          return (
+            <article key={c.id} className="race-card">
+              <header>
+                <h3>{c.carrera}</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span className="race-badge">Próxima: {c.proxima_edicion}</span>
+                  <button
+                    type="button"
+                    className="settings-close"
+                    onClick={() => eliminar(c.id)}
+                    disabled={borrandoId === c.id}
+                    aria-label="Eliminar competencia"
+                  >
+                    {borrandoId === c.id ? <Spinner /> : '✕'}
+                  </button>
+                </div>
+              </header>
+              <div className="race-stats">
+                {celdas.map((celda) => (
+                  <div key={celda.label}>
+                    <span className="race-stat-label">{celda.label}</span>
+                    <span className={`race-stat-value ${celda.accent ? 'race-stat-accent' : ''}`}>{celda.value}</span>
+                  </div>
+                ))}
               </div>
-            </header>
-            <div className="race-stats">
-              <div>
-                <span className="race-stat-label">Edición 2025</span>
-                <span className="race-stat-value">{valorO(c.fecha_2025)}</span>
-              </div>
-              <div>
-                <span className="race-stat-label">Distancia</span>
-                <span className="race-stat-value">{valorO(c.distancia_km, ' km')}</span>
-              </div>
-              <div>
-                <span className="race-stat-label">Tiempo</span>
-                <span className="race-stat-value">
-                  {c.tiempo_min != null ? `${Math.round((c.tiempo_min / 60) * 10) / 10} h` : '—'}
-                </span>
-              </div>
-              <div>
-                <span className="race-stat-label">FC promedio</span>
-                <span className="race-stat-value">{valorO(c.fc_prom)} <span className="unit">bpm</span></span>
-              </div>
-              <div>
-                <span className="race-stat-label">Potencia promedio</span>
-                <span className="race-stat-value">{valorO(c.potencia_prom_w)} <span className="unit">W</span></span>
-              </div>
-              <div>
-                <span className="race-stat-label">% FTP real</span>
-                <span className="race-stat-value race-stat-accent">{valorO(c.pct_ftp_prom, '%')}</span>
-              </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          )
+        })}
       </div>
 
       <form onSubmit={agregar} className="login-form objetivo-form" style={{ marginTop: 20 }}>

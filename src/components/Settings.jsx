@@ -116,7 +116,7 @@ export default function Settings({ onClose, onSynced, avisoInicial, userId, perf
         : data.meses?.[0] || 'Este mes'
       setEstadoStrava({
         tipo: 'ok',
-        texto: `${rango}: ${data.salidas} salidas, ${data.km} km, ${data.horas} h. ${data.fondosNuevos ? `${data.fondosNuevos} fondo(s) nuevo(s) en el top.` : ''}`,
+        texto: `${rango}: ${data.salidas} salidas, ${data.km} km, ${data.horas} h. ${data.fondosNuevos ? `${data.fondosNuevos} marca(s) nueva(s) en el top.` : ''}`,
       })
       onSynced?.()
     } catch (err) {
@@ -133,7 +133,7 @@ export default function Settings({ onClose, onSynced, avisoInicial, userId, perf
       const data = await llamarFuncion('sincronizar-strava', { forzar_historico: true })
       setEstadoStrava({
         tipo: 'ok',
-        texto: `Histórico completo (${data.meses.length} mes(es)): ${data.salidas} salidas, ${data.km} km, ${data.horas} h. ${data.fondosNuevos ? `${data.fondosNuevos} fondo(s) en el top.` : ''}`,
+        texto: `Histórico completo (${data.meses.length} mes(es)): ${data.salidas} salidas, ${data.km} km, ${data.horas} h. ${data.fondosNuevos ? `${data.fondosNuevos} marca(s) en el top.` : ''}`,
       })
       onSynced?.()
     } catch (err) {
@@ -236,7 +236,7 @@ export default function Settings({ onClose, onSynced, avisoInicial, userId, perf
             <StravaIcon /> Strava
           </h3>
           <p className="section-sub">
-            Conectá tu cuenta de Strava para traer volumen mensual y tus fondos más largos. El token queda cifrado,
+            Conectá tu cuenta de Strava para traer volumen mensual y tus mejores marcas por deporte. El token queda cifrado,
             nunca visible en el navegador.
           </p>
           {estadoStrava && (

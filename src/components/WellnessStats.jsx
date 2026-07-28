@@ -26,13 +26,15 @@ export default function WellnessStats({ data }) {
         <span className="stat-value">{ultimo.form}</span>
         <span className={`estado-badge ${forma.cls}`}>{forma.texto}</span>
       </div>
-      <div className="stat-tile">
-        <span className="stat-label">eFTP estimado</span>
-        <span className="stat-value">
-          {ultimo.eftp_w}<span className="stat-unit">W</span>
-        </span>
-        <span className="stat-delta">Estimado por curva de potencia — distinto del test manual (250W), no reemplaza ese dato</span>
-      </div>
+      {ultimo.eftp_w != null && (
+        <div className="stat-tile">
+          <span className="stat-label">eFTP estimado</span>
+          <span className="stat-value">
+            {ultimo.eftp_w}<span className="stat-unit">W</span>
+          </span>
+          <span className="stat-delta">Estimado por curva de potencia — distinto de un test real, no lo reemplaza</span>
+        </div>
+      )}
     </div>
   )
 }

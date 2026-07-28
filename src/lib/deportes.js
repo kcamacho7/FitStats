@@ -40,3 +40,34 @@ export function filtrarPorDeporte(volumenMensual, deporte) {
     .slice()
     .sort((a, b) => a.mes.localeCompare(b.mes))
 }
+
+const RIDE_TIPOS = new Set(['Ride', 'VirtualRide', 'EBikeRide'])
+const PASO_TIPOS = new Set(['Run', 'TrailRun', 'Walk', 'Hike'])
+
+function formatearMinSeg(minutosDecimal) {
+  const totalSeg = Math.round(minutosDecimal * 60)
+  const min = Math.floor(totalSeg / 60)
+  const seg = totalSeg % 60
+  return `${min}:${String(seg).padStart(2, '0')}`
+}
+
+// Indicador secundario según el deporte, calculado solo con datos que ya guardamos
+// (distancia y tiempo) — sin pedir nada nuevo a Strava. Devuelve null si el deporte
+// no tiene un indicador de ritmo/velocidad relevante (pesas, yoga, etc.).
+export function indicadorSecundario(deporte, { distancia_km, moving_time_min }) {
+  if (!distancia_km || !moving_time_min) return null
+
+  if (RIDE_TIPOS.has(deporte)) {
+    const velocidad = distancia_km / (moving_time_min / 60)
+    return { label: 'Velocidad promedio', value: `${Math.round(velocidad * 10) / 10} km/h` }
+  }
+  if (PASO_TIPOS.has(deporte)) {
+    const ritmo = moving_time_min / distancia_km
+    return { label: 'Ritmo', value: `${formatearMinSeg(ritmo)} /km` }
+  }
+  if (deporte === 'Swim') {
+    const ritmo100 = moving_time_min / (distancia_km * 10)
+    return { label: 'Ritmo', value: `${formatearMinSeg(ritmo100)} /100m` }
+  }
+  return null
+}
