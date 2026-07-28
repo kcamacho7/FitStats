@@ -104,9 +104,12 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
     setEstadoStrava(null)
     try {
       const data = await llamarFuncion('sincronizar-strava')
+      const rango = data.primeraVez
+        ? `Histórico completo (${data.meses.length} mes(es))`
+        : data.meses?.[0] || 'Este mes'
       setEstadoStrava({
         tipo: 'ok',
-        texto: `Mes ${data.mes}: ${data.salidas} salidas, ${data.km} km, ${data.horas} h. ${data.fondosNuevos ? `${data.fondosNuevos} fondo(s) nuevo(s) en el top.` : ''}`,
+        texto: `${rango}: ${data.salidas} salidas, ${data.km} km, ${data.horas} h. ${data.fondosNuevos ? `${data.fondosNuevos} fondo(s) nuevo(s) en el top.` : ''}`,
       })
       onSynced?.()
     } catch (err) {
