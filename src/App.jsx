@@ -87,19 +87,21 @@ function App() {
 
   return (
     <div className="app-shell">
-      <div className="topbar">
-        <div className="topbar-brand">
-          <img src={logoIcon} alt="FitStats" className="topbar-logo" />
-          <span className="topbar-brand-name">FitStats</span>
-        </div>
-        <div className="topbar-right">
-          <TopbarMenu
-            email={user.email}
-            isAdmin={user.id === ADMIN_USER_ID}
-            onOpenAdmin={() => setMostrarAdmin(true)}
-            onOpenConfig={() => setMostrarConfig(true)}
-            onSignOut={signOut}
-          />
+      <div className="topbar-bar">
+        <div className="topbar">
+          <div className="topbar-brand">
+            <img src={logoIcon} alt="FitStats" className="topbar-logo" />
+            <span className="topbar-brand-name">FitStats</span>
+          </div>
+          <div className="topbar-right">
+            <TopbarMenu
+              email={user.email}
+              isAdmin={user.id === ADMIN_USER_ID}
+              onOpenAdmin={() => setMostrarAdmin(true)}
+              onOpenConfig={() => setMostrarConfig(true)}
+              onSignOut={signOut}
+            />
+          </div>
         </div>
       </div>
 
