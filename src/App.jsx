@@ -13,6 +13,7 @@ import Login from './components/Login'
 import Settings from './components/Settings'
 import CompletarPerfil from './components/CompletarPerfil'
 import Admin from './components/Admin'
+import TopbarMenu from './components/TopbarMenu'
 import { useAuth, nombreSugerido } from './hooks/useAuth'
 import { useCiclismoData } from './hooks/useCiclismoData'
 import { supabase } from './lib/supabaseClient'
@@ -92,20 +93,13 @@ function App() {
           <span className="topbar-brand-name">FitStats</span>
         </div>
         <div className="topbar-right">
-          <span className="topbar-user">{user.email}</span>
-          <div className="topbar-actions">
-            {user.id === ADMIN_USER_ID && (
-              <button type="button" className="login-switch" onClick={() => setMostrarAdmin(true)}>
-                Administración
-              </button>
-            )}
-            <button type="button" className="login-switch" onClick={() => setMostrarConfig(true)}>
-              Configuración
-            </button>
-            <button type="button" className="login-switch" onClick={signOut}>
-              Cerrar sesión
-            </button>
-          </div>
+          <TopbarMenu
+            email={user.email}
+            isAdmin={user.id === ADMIN_USER_ID}
+            onOpenAdmin={() => setMostrarAdmin(true)}
+            onOpenConfig={() => setMostrarConfig(true)}
+            onSignOut={signOut}
+          />
         </div>
       </div>
 
