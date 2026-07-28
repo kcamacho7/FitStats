@@ -5,6 +5,8 @@ import EffortChart from './components/EffortChart'
 import TopFondos from './components/TopFondos'
 import RaceCards from './components/RaceCards'
 import PlanVsActual from './components/PlanVsActual'
+import WellnessStats from './components/WellnessStats'
+import WellnessChart from './components/WellnessChart'
 import { useCiclismoData } from './hooks/useCiclismoData'
 import './App.css'
 
@@ -43,6 +45,16 @@ function App() {
             <VolumeChart data={data} />
             <EffortChart data={data} />
           </div>
+        </section>
+
+        <section className="section">
+          <h2>Estado físico (intervals.icu)</h2>
+          <p className="section-sub">
+            Fitness/Fatiga/Forma calculados desde tu histórico de entrenamiento. Sin datos de sueño, HRV o FC en
+            reposo — tu cuenta no los tiene registrados todavía.
+          </p>
+          <WellnessStats data={data} />
+          <WellnessChart data={data} />
         </section>
 
         <RaceCards data={data} />

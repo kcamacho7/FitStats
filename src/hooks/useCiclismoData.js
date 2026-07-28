@@ -10,16 +10,17 @@ export function useCiclismoData() {
 
     async function cargar() {
       try {
-        const [perfilRes, hitosRes, volumenRes, fondosRes, carrerasRes, planRes] = await Promise.all([
+        const [perfilRes, hitosRes, volumenRes, fondosRes, carrerasRes, planRes, wellnessRes] = await Promise.all([
           supabase.from('perfil').select('*').eq('id', 1).single(),
           supabase.from('hitos').select('*').order('fecha'),
           supabase.from('volumen_mensual').select('*').order('mes'),
           supabase.from('top_fondos').select('*').order('distance_km', { ascending: false }),
           supabase.from('carreras').select('*'),
           supabase.from('plan_vs_actual').select('*').order('fecha'),
+          supabase.from('wellness_diario').select('*').order('fecha'),
         ])
 
-        for (const r of [perfilRes, hitosRes, volumenRes, fondosRes, carrerasRes, planRes]) {
+        for (const r of [perfilRes, hitosRes, volumenRes, fondosRes, carrerasRes, planRes, wellnessRes]) {
           if (r.error) throw r.error
         }
 
@@ -44,6 +45,7 @@ export function useCiclismoData() {
           top_fondos: fondosRes.data,
           carreras: carrerasRes.data,
           plan_vs_actual: planRes.data,
+          wellness_diario: wellnessRes.data,
         })
       } catch (e) {
         if (!cancelado) setError(e)

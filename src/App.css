@@ -315,6 +315,21 @@ main {
   max-width: 480px;
 }
 
+.chart-card-wide {
+  max-width: none;
+}
+
+.wellness-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.wellness-stats .stat-delta {
+  line-height: 1.35;
+}
+
 .chart-tooltip {
   background: var(--surface-2);
   border: 1px solid var(--border);
