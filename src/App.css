@@ -297,6 +297,47 @@ main {
   width: auto;
 }
 
+/* ---------- Filtro de deporte (selección múltiple) ---------- */
+.filtro-deporte {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filtro-deporte-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.filtro-deporte-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filtro-deporte-chip {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.filtro-deporte-chip:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.filtro-deporte-chip.is-activo {
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
 /* ---------- Charts ---------- */
 .chart-grid {
   display: grid;

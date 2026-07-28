@@ -12,6 +12,7 @@ import Settings from './components/Settings'
 import CompletarPerfil from './components/CompletarPerfil'
 import Admin from './components/Admin'
 import TopbarMenu from './components/TopbarMenu'
+import FiltroDeporte from './components/FiltroDeporte'
 import { useAuth, nombreSugerido } from './hooks/useAuth'
 import { useCiclismoData } from './hooks/useCiclismoData'
 import { supabase } from './lib/supabaseClient'
@@ -27,7 +28,31 @@ function App() {
   const [mostrarConfig, setMostrarConfig] = useState(false)
   const [mostrarAdmin, setMostrarAdmin] = useState(false)
   const [avisoStrava, setAvisoStrava] = useState(null)
+  const [deportesSeleccionados, setDeportesSeleccionados] = useState([])
   const { data, error, loading } = useCiclismoData(user?.id, refreshKey)
+
+  const deportesDisponibles = data
+    ? [...new Set([
+        ...data.volumen_mensual.map((r) => r.deporte),
+        ...data.top_fondos.map((r) => r.deporte),
+        ...data.carreras.map((r) => r.deporte).filter(Boolean),
+      ])].sort()
+    : []
+
+  const filtrarPorDeporteSeleccionado = (filas) =>
+    deportesSeleccionados.length === 0 ? filas : filas.filter((f) => deportesSeleccionados.includes(f.deporte))
+
+  const dataFiltrada = data
+    ? {
+        ...data,
+        volumen_mensual: filtrarPorDeporteSeleccionado(data.volumen_mensual),
+        top_fondos: filtrarPorDeporteSeleccionado(data.top_fondos),
+        carreras:
+          deportesSeleccionados.length === 0
+            ? data.carreras
+            : data.carreras.filter((c) => c.deporte == null || deportesSeleccionados.includes(c.deporte)),
+      }
+    : data
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -151,10 +176,16 @@ function App() {
 
             {data.hitos.length > 0 && <Timeline data={data} />}
 
-            <VolumenSection data={data} />
+            <FiltroDeporte
+              deportesDisponibles={deportesDisponibles}
+              seleccionados={deportesSeleccionados}
+              onCambiar={setDeportesSeleccionados}
+            />
 
-            <RaceCards data={data} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
-            {data.top_fondos.length > 0 && <MejoresMarcas data={data} />}
+            <VolumenSection data={dataFiltrada} />
+
+            <RaceCards data={dataFiltrada} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
+            {dataFiltrada.top_fondos.length > 0 && <MejoresMarcas data={dataFiltrada} />}
             <PlanVsActual data={data} onCambio={() => setRefreshKey((k) => k + 1)} />
           </main>
 
