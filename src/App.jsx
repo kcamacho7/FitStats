@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Hero from './components/Hero'
 import Timeline from './components/Timeline'
 import VolumeChart from './components/VolumeChart'
@@ -18,7 +18,23 @@ function App() {
   const { session, loading: authLoading, user, signIn, signUp, signInWithGoogle, signOut } = useAuth()
   const [refreshKey, setRefreshKey] = useState(0)
   const [mostrarConfig, setMostrarConfig] = useState(false)
+  const [avisoStrava, setAvisoStrava] = useState(null)
   const { data, error, loading } = useCiclismoData(user?.id, refreshKey)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const strava = params.get('strava')
+    if (strava === 'conectado') {
+      setAvisoStrava({ tipo: 'ok', texto: 'Strava conectado. Abrí Configuración y tocá "Sincronizar ahora" para traer tus datos.' })
+      setMostrarConfig(true)
+    } else if (strava === 'error') {
+      setAvisoStrava({ tipo: 'error', texto: `No se pudo conectar Strava (${params.get('msg') || 'error desconocido'}).` })
+      setMostrarConfig(true)
+    }
+    if (strava) {
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [])
 
   if (authLoading) {
     return (
@@ -114,7 +130,11 @@ function App() {
       )}
 
       {mostrarConfig && (
-        <Settings onClose={() => setMostrarConfig(false)} onSynced={() => setRefreshKey((k) => k + 1)} />
+        <Settings
+          onClose={() => setMostrarConfig(false)}
+          onSynced={() => setRefreshKey((k) => k + 1)}
+          avisoInicial={avisoStrava}
+        />
       )}
     </div>
   )
