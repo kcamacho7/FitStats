@@ -12,6 +12,7 @@ import WellnessChart from './components/WellnessChart'
 import Login from './components/Login'
 import Settings from './components/Settings'
 import CompletarPerfil from './components/CompletarPerfil'
+import Admin from './components/Admin'
 import { useAuth, nombreSugerido } from './hooks/useAuth'
 import { useCiclismoData } from './hooks/useCiclismoData'
 import { supabase } from './lib/supabaseClient'
@@ -19,11 +20,13 @@ import logoIcon from './assets/logo-icon.png'
 import './App.css'
 
 const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
+const ADMIN_USER_ID = '2e46f380-ad94-4d76-9571-822804e6049a'
 
 function App() {
   const { session, loading: authLoading, user, signIn, signUp, signInWithGoogle, signOut } = useAuth()
   const [refreshKey, setRefreshKey] = useState(0)
   const [mostrarConfig, setMostrarConfig] = useState(false)
+  const [mostrarAdmin, setMostrarAdmin] = useState(false)
   const [avisoStrava, setAvisoStrava] = useState(null)
   const { data, error, loading } = useCiclismoData(user?.id, refreshKey)
 
@@ -58,6 +61,7 @@ function App() {
           body: JSON.stringify({}),
         }).catch(() => null)
 
+      supabase.from('eventos_uso').insert({ user_id: user.id, tipo: 'login' }).then(() => {})
       await Promise.all([llamar('sincronizar-strava'), llamar('sincronizar-intervals')])
       if (!cancelado) setRefreshKey((k) => k + 1)
     }
@@ -90,6 +94,11 @@ function App() {
         <div className="topbar-right">
           <span className="topbar-user">{user.email}</span>
           <div className="topbar-actions">
+            {user.id === ADMIN_USER_ID && (
+              <button type="button" className="login-switch" onClick={() => setMostrarAdmin(true)}>
+                Administración
+              </button>
+            )}
             <button type="button" className="login-switch" onClick={() => setMostrarConfig(true)}>
               Configuración
             </button>
@@ -181,6 +190,8 @@ function App() {
           avisoInicial={avisoStrava}
         />
       )}
+
+      {mostrarAdmin && user.id === ADMIN_USER_ID && <Admin onClose={() => setMostrarAdmin(false)} />}
     </div>
   )
 }
