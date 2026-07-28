@@ -1,47 +1,35 @@
-/* Tema "carbono / Dura Ace" — inspirado en el cuadro de carbono negro y el grupo
-   Shimano Dura Ace de la bici del usuario (X-LAB RS9), no una identidad de marca oficial. */
+/* Tema oficial de marca FitStats (Manual de Marca v1.0) — navy #1B2530,
+   naranja #FF6A2C/#FFB648 para energía/CTA, azul #1C8FE0/#6FD8EC para datos. */
 .app-shell {
-  --page: #0d0d0d;
-  --surface: #1a1a19;
-  --surface-2: #212120;
+  --page: #1b2530;
+  --surface: #202b38;
+  --surface-2: #232f3d;
   --text-primary: #ffffff;
-  --text-secondary: #c3c2b7;
-  --muted: #898781;
-  --gridline: #2c2c2a;
-  --baseline: #383835;
-  --border: rgba(255, 255, 255, 0.1);
+  --text-secondary: #9aa5b1;
+  --muted: #8a93a0;
+  --gridline: #2c3947;
+  --baseline: #2c3947;
+  --border: #2c3947;
 
-  --series-1: #3987e5; /* blue: potencia / horas */
-  --series-2: #d95926; /* orange: relative effort */
-  --series-3: #199e70; /* aqua: forma (CTL-ATL) */
-  --accent: #e66767;   /* red: acento de marca */
+  --series-1: #1c8fe0; /* azul: potencia / horas */
+  --series-2: #ff6a2c; /* naranja: relative effort */
+  --series-3: #199e70; /* verde/aqua: forma (CTL-ATL) */
+  --accent: #ff6a2c;   /* naranja: acento de marca */
 
-  --good: #0ca30c;
-  --warning: #fab219;
+  --good: #1e9e3f;
+  --warning: #ffb648;
   --serious: #ec835a;
-  --critical: #d03b3b;
+  --critical: #e0492a;
 
   color: var(--text-primary);
   min-height: 100vh;
   position: relative;
 
-  /* Fondo "fibra de carbono" + resplandor de acento — look propio inspirado en la estética
-     de la página del fabricante de la bici (negro carbono, foto de detalle sobre gris oscuro),
-     sin usar ninguna imagen ni logo de la marca real. */
   background-color: var(--page);
   background-image:
-    radial-gradient(ellipse 1200px 680px at 90% -12%, rgba(230, 103, 103, 0.38), transparent 60%),
-    radial-gradient(ellipse 900px 560px at 2% 20%, rgba(57, 135, 229, 0.24), transparent 65%),
-    linear-gradient(27deg, #262622 7px, transparent 7px) 0 7px,
-    linear-gradient(207deg, #262622 7px, transparent 7px) 14px 0,
-    linear-gradient(27deg, #322f29 7px, transparent 7px) 0 14px,
-    linear-gradient(207deg, #322f29 7px, transparent 7px) 14px 7px,
-    linear-gradient(90deg, #201e1a 14px, transparent 14px),
-    linear-gradient(#282520 25%, #17150f 25%, #17150f 50%, transparent 50%, transparent 75%, #2a2621 75%);
-  background-size:
-    auto,
-    auto,
-    28px 28px, 28px 28px, 28px 28px, 28px 28px, 28px 28px, 28px 28px;
+    radial-gradient(circle at 25% 30%, rgba(255, 106, 44, 0.14), transparent 45%),
+    radial-gradient(circle at 78% 70%, rgba(28, 143, 224, 0.18), transparent 50%),
+    linear-gradient(160deg, #1b2530 0%, #202b38 55%, #1b2530 100%);
   background-attachment: fixed;
 }
 
@@ -117,6 +105,7 @@ main {
 }
 
 .stat-value {
+  font-family: var(--font-heading);
   font-size: 32px;
   font-weight: 700;
   line-height: 1;
@@ -387,8 +376,8 @@ main {
 .race-badge {
   font-size: 11px;
   color: var(--accent);
-  border: 1px solid rgba(230, 103, 103, 0.35);
-  background: rgba(230, 103, 103, 0.12);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
   padding: 3px 8px;
   border-radius: 999px;
   white-space: nowrap;
@@ -536,6 +525,7 @@ main {
 }
 
 .topbar-brand-name {
+  font-family: var(--font-heading);
   font-weight: 700;
   letter-spacing: 0.02em;
   color: var(--text-primary);
