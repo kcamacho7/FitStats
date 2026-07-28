@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import Hero from './components/Hero'
 import Timeline from './components/Timeline'
-import VolumeChart from './components/VolumeChart'
-import EffortChart from './components/EffortChart'
-import VolumenPorDeporte from './components/VolumenPorDeporte'
+import VolumenSection from './components/VolumenSection'
 import TopFondos from './components/TopFondos'
 import RaceCards from './components/RaceCards'
 import PlanVsActual from './components/PlanVsActual'
@@ -153,19 +151,7 @@ function App() {
 
             {data.hitos.length > 0 && <Timeline data={data} />}
 
-            {data.volumen_mensual.length > 0 && (
-              <section className="section">
-                <h2>Volumen y carga de entrenamiento</h2>
-                <p className="section-sub">
-                  {data.mesesConDatos} mes{data.mesesConDatos === 1 ? '' : 'es'} de datos reales, mes a mes.
-                </p>
-                <div className="chart-grid">
-                  <VolumeChart data={data} />
-                  <EffortChart data={data} />
-                </div>
-                <VolumenPorDeporte data={data} />
-              </section>
-            )}
+            <VolumenSection data={data} />
 
             <RaceCards data={data} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
             {data.top_fondos.length > 0 && <TopFondos data={data} />}
@@ -186,6 +172,8 @@ function App() {
           onClose={() => setMostrarConfig(false)}
           onSynced={() => setRefreshKey((k) => k + 1)}
           avisoInicial={avisoStrava}
+          userId={user.id}
+          perfil={data?.perfil}
         />
       )}
 

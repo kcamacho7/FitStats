@@ -29,7 +29,7 @@ function IntervalsIcon() {
   )
 }
 
-export default function Settings({ onClose, onSynced, avisoInicial }) {
+export default function Settings({ onClose, onSynced, avisoInicial, userId, perfil }) {
   const [apiKey, setApiKey] = useState('')
   const [athleteId, setAthleteId] = useState('')
   const [estadoIntervals, setEstadoIntervals] = useState(null)
@@ -39,6 +39,12 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
   const [conectandoStrava, setConectandoStrava] = useState(false)
   const [sincronizandoStrava, setSincronizandoStrava] = useState(false)
   const [trayendoHistorico, setTrayendoHistorico] = useState(false)
+
+  const [pesoKg, setPesoKg] = useState(perfil?.peso_kg ?? '')
+  const [estaturaCm, setEstaturaCm] = useState(perfil?.estatura_cm ?? '')
+  const [ftpActualW, setFtpActualW] = useState(perfil?.ftp_actual_w ?? '')
+  const [guardandoFisico, setGuardandoFisico] = useState(false)
+  const [estadoFisico, setEstadoFisico] = useState(null)
 
   const llamarFuncion = async (nombre, body) => {
     const { data: { session } } = await supabase.auth.getSession()
@@ -137,6 +143,29 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
     }
   }
 
+  const guardarDatosFisicos = async (e) => {
+    e.preventDefault()
+    setGuardandoFisico(true)
+    setEstadoFisico(null)
+    try {
+      const { error } = await supabase
+        .from('perfil')
+        .update({
+          peso_kg: pesoKg === '' ? null : Number(pesoKg),
+          estatura_cm: estaturaCm === '' ? null : Number(estaturaCm),
+          ftp_actual_w: ftpActualW === '' ? null : Number(ftpActualW),
+        })
+        .eq('user_id', userId)
+      if (error) throw error
+      setEstadoFisico({ tipo: 'ok', texto: 'Datos guardados.' })
+      onSynced?.()
+    } catch (err) {
+      setEstadoFisico({ tipo: 'error', texto: err.message })
+    } finally {
+      setGuardandoFisico(false)
+    }
+  }
+
   return (
     <div className="settings-overlay" onClick={onClose}>
       <div className="settings-card" onClick={(e) => e.stopPropagation()}>
@@ -146,6 +175,61 @@ export default function Settings({ onClose, onSynced, avisoInicial }) {
             ✕
           </button>
         </div>
+
+        <section className="settings-section">
+          <h3 className="settings-section-title">Datos físicos</h3>
+          <p className="section-sub">
+            Peso, estatura y FTP real (de una prueba) para calcular tu W/kg y comparar tu potencia contra tu FTP en
+            competencias. Si no cargás un FTP acá, en el Hero se muestra el eFTP estimado por intervals.icu (si tu
+            cuenta lo tiene) como referencia, aclarando que es un estimado y no una prueba real.
+          </p>
+          <form onSubmit={guardarDatosFisicos} className="login-form">
+            <label className="login-label">
+              Peso (kg)
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                value={pesoKg}
+                onChange={(e) => setPesoKg(e.target.value)}
+                className="login-input"
+              />
+            </label>
+            <label className="login-label">
+              Estatura (cm)
+              <input
+                type="number"
+                step="1"
+                min="0"
+                value={estaturaCm}
+                onChange={(e) => setEstaturaCm(e.target.value)}
+                className="login-input"
+              />
+            </label>
+            <label className="login-label">
+              FTP real (W) — de una prueba, no un estimado
+              <input
+                type="number"
+                step="1"
+                min="0"
+                value={ftpActualW}
+                onChange={(e) => setFtpActualW(e.target.value)}
+                className="login-input"
+              />
+            </label>
+
+            {estadoFisico && (
+              <p className={estadoFisico.tipo === 'error' ? 'error-text login-msg' : 'loading-text login-msg'}>
+                {estadoFisico.texto}
+              </p>
+            )}
+
+            <button type="submit" className="login-btn" disabled={guardandoFisico} style={{ alignSelf: 'flex-start' }}>
+              {guardandoFisico && <Spinner />}
+              Guardar
+            </button>
+          </form>
+        </section>
 
         <section className="settings-section">
           <h3 className="settings-section-title">
