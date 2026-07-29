@@ -3,6 +3,7 @@ import Hero from './components/Hero'
 import Timeline from './components/Timeline'
 import VolumenSection from './components/VolumenSection'
 import MejoresMarcas from './components/MejoresMarcas'
+import Actividades from './components/Actividades'
 import RaceCards from './components/RaceCards'
 import PlanVsActual from './components/PlanVsActual'
 import WellnessStats from './components/WellnessStats'
@@ -54,6 +55,7 @@ function App() {
         ...data,
         volumen_mensual: filtrarPorDeporteSeleccionado(data.volumen_mensual),
         top_fondos: filtrarPorDeporteSeleccionado(data.top_fondos),
+        actividades: filtrarPorDeporteSeleccionado(data.actividades),
         carreras:
           deportesSeleccionados.length === 0
             ? data.carreras
@@ -194,6 +196,7 @@ function App() {
 
             <RaceCards data={dataFiltrada} userId={user.id} onCambio={() => setRefreshKey((k) => k + 1)} />
             {dataFiltrada.top_fondos.length > 0 && <MejoresMarcas data={dataFiltrada} />}
+            <Actividades data={dataFiltrada} />
             {mostrarPlanVsActual && (
               <PlanVsActual data={data} onCambio={() => setRefreshKey((k) => k + 1)} />
             )}

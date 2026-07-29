@@ -19,6 +19,9 @@ export default function WellnessStats({ data }) {
   const sueno = masRecienteConCampo(rows, 'sleep_hours')
   const fcReposo = masRecienteConCampo(rows, 'resting_hr')
   const hrv = masRecienteConCampo(rows, 'hrv')
+  const peso = masRecienteConCampo(rows, 'peso_kg')
+  const pasos = masRecienteConCampo(rows, 'pasos')
+  const vo2max = masRecienteConCampo(rows, 'vo2max')
 
   return (
     <div className="wellness-stats">
@@ -71,6 +74,29 @@ export default function WellnessStats({ data }) {
           <span className="stat-label">HRV</span>
           <span className="stat-value">{hrv.hrv}</span>
           <span className="stat-delta">al {hrv.fecha}</span>
+        </div>
+      )}
+      {peso && (
+        <div className="stat-tile">
+          <span className="stat-label">Peso</span>
+          <span className="stat-value">
+            {peso.peso_kg}<span className="stat-unit">kg</span>
+          </span>
+          <span className="stat-delta">al {peso.fecha}</span>
+        </div>
+      )}
+      {pasos && (
+        <div className="stat-tile">
+          <span className="stat-label">Pasos</span>
+          <span className="stat-value">{pasos.pasos.toLocaleString('es-CR')}</span>
+          <span className="stat-delta">al {pasos.fecha}</span>
+        </div>
+      )}
+      {vo2max && (
+        <div className="stat-tile">
+          <span className="stat-label">VO2max</span>
+          <span className="stat-value">{vo2max.vo2max}</span>
+          <span className="stat-delta">al {vo2max.fecha}</span>
         </div>
       )}
     </div>
