@@ -61,6 +61,10 @@ export default function RaceCards({ data, userId, onCambio }) {
       <div className="race-grid">
         {data.carreras.map((c) => {
           const ind = indicadorSecundario(c.deporte, { distancia_km: c.distancia_km, moving_time_min: c.tiempo_min })
+          const pctFtp =
+            c.potencia_prom_w != null && c.ftp_real_vigente_w
+              ? Math.round((Number(c.potencia_prom_w) / Number(c.ftp_real_vigente_w)) * 1000) / 10
+              : null
           const celdas = [
             { label: 'Edición 2025', value: valorO(c.fecha_2025) },
             { label: 'Distancia', value: valorO(c.distancia_km, ' km') },
@@ -75,8 +79,8 @@ export default function RaceCards({ data, userId, onCambio }) {
             ...(c.potencia_prom_w != null
               ? [{ label: 'Potencia promedio', value: <>{c.potencia_prom_w} <span className="unit">W</span></> }]
               : []),
-            ...(c.pct_ftp_prom != null
-              ? [{ label: '% FTP real', value: `${c.pct_ftp_prom}%`, accent: true }]
+            ...(pctFtp != null
+              ? [{ label: '% FTP real', value: `${pctFtp}%`, accent: true }]
               : []),
             ...(ind ? [{ label: ind.label, value: ind.value }] : []),
           ]

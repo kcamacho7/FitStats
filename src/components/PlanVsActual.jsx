@@ -5,11 +5,19 @@ import Spinner from './Spinner'
 const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
 const MAX_LADO = 1280
 
+// "Ejecutado" y "% cumplido" se derivan en vivo de los datos crudos (planned/actual),
+// no existen como columnas en la base normalizada.
+function pctEjecutado(row) {
+  if (row.actual_time_min == null || !row.planned_time_min) return null
+  return Math.round((Number(row.actual_time_min) / Number(row.planned_time_min)) * 1000) / 10
+}
+
 function estadoDe(row) {
-  if (!row.ejecutado) return { label: 'Sin registro', cls: 'estado-critical' }
-  if (row.pct_tiempo_ejecutado == null) return { label: 'Ejecutado', cls: 'estado-good' }
-  if (row.pct_tiempo_ejecutado >= 90) return { label: 'Cumplido', cls: 'estado-good' }
-  if (row.pct_tiempo_ejecutado >= 70) return { label: 'Parcial', cls: 'estado-warning' }
+  if (row.actual_time_min == null) return { label: 'Sin registro', cls: 'estado-critical' }
+  const pct = pctEjecutado(row)
+  if (pct == null) return { label: 'Ejecutado', cls: 'estado-good' }
+  if (pct >= 90) return { label: 'Cumplido', cls: 'estado-good' }
+  if (pct >= 70) return { label: 'Parcial', cls: 'estado-warning' }
   return { label: 'Muy parcial', cls: 'estado-serious' }
 }
 
@@ -118,13 +126,14 @@ export default function PlanVsActual({ data, onCambio }) {
             <tbody>
               {rows.map((r) => {
                 const estadoFila = estadoDe(r)
+                const pct = pctEjecutado(r)
                 return (
                   <tr key={r.fecha}>
                     <td>{r.fecha}</td>
                     <td>{r.workout_name || '—'}</td>
                     <td className="num">{r.planned_time_min ?? '—'}</td>
                     <td className="num">{r.actual_time_min ? Math.round(r.actual_time_min) : '—'}</td>
-                    <td className="num">{r.pct_tiempo_ejecutado ? `${r.pct_tiempo_ejecutado}%` : '—'}</td>
+                    <td className="num">{pct != null ? `${pct}%` : '—'}</td>
                     <td>
                       <span className={`estado-badge ${estadoFila.cls}`}>{estadoFila.label}</span>
                     </td>

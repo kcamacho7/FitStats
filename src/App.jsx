@@ -204,8 +204,10 @@ function App() {
 
           <footer className="app-footer">
             <p>
-              Datos actualizados automáticamente · Generado el{' '}
-              {new Date(data.generado).toLocaleDateString('es-CR', { year: 'numeric', month: 'long', day: 'numeric' })}
+              Datos actualizados automáticamente
+              {data.generado
+                ? ` · Último dato: ${new Date(data.generado + 'T00:00:00').toLocaleDateString('es-CR', { year: 'numeric', month: 'long', day: 'numeric' })}`
+                : ''}
             </p>
           </footer>
         </>

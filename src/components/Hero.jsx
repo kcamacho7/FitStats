@@ -53,9 +53,11 @@ export default function Hero({ data }) {
             <span className="stat-value">
               {perfil.ftp_actual_w}<span className="stat-unit">W</span>
             </span>
-            {perfil.ftp_2025_w != null && (
-              <span className="stat-delta stat-delta-up">
-                +{perfil.ftp_actual_w - perfil.ftp_2025_w} W vs. 2025 ({perfil.ftp_2025_w}W)
+            {perfil.ftp_anterior_w != null && (
+              <span className={`stat-delta ${perfil.ftp_actual_w >= perfil.ftp_anterior_w ? 'stat-delta-up' : ''}`}>
+                {perfil.ftp_actual_w >= perfil.ftp_anterior_w ? '+' : ''}
+                {perfil.ftp_actual_w - perfil.ftp_anterior_w} W vs. test anterior ({perfil.ftp_anterior_w}W ·{' '}
+                {perfil.ftp_anterior_fecha})
               </span>
             )}
           </div>
@@ -79,7 +81,7 @@ export default function Hero({ data }) {
               {perfil.wkg_actual}<span className="stat-unit">W/kg</span>
             </span>
             <span className="stat-delta">
-              {perfil.peso_kg} kg{perfil.bicicleta?.peso_kg ? ` · ${perfil.bicicleta.peso_kg} kg bici` : ''}
+              {perfil.peso_kg} kg{perfil.peso_bici_kg ? ` · ${perfil.peso_bici_kg} kg bici` : ''}
             </span>
           </div>
         )}

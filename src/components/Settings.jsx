@@ -42,7 +42,9 @@ export default function Settings({ onClose, onSynced, avisoInicial, userId, perf
 
   const [pesoKg, setPesoKg] = useState(perfil?.peso_kg ?? '')
   const [estaturaCm, setEstaturaCm] = useState(perfil?.estatura_cm ?? '')
-  const [ftpActualW, setFtpActualW] = useState(perfil?.ftp_actual_w ?? '')
+  const [pesoBiciKg, setPesoBiciKg] = useState(perfil?.peso_bici_kg ?? '')
+  const [ftpNuevoW, setFtpNuevoW] = useState('')
+  const [ftpFecha, setFtpFecha] = useState(new Date().toISOString().slice(0, 10))
   const [guardandoFisico, setGuardandoFisico] = useState(false)
   const [estadoFisico, setEstadoFisico] = useState(null)
 
@@ -153,10 +155,20 @@ export default function Settings({ onClose, onSynced, avisoInicial, userId, perf
         .update({
           peso_kg: pesoKg === '' ? null : Number(pesoKg),
           estatura_cm: estaturaCm === '' ? null : Number(estaturaCm),
-          ftp_actual_w: ftpActualW === '' ? null : Number(ftpActualW),
+          peso_bici_kg: pesoBiciKg === '' ? null : Number(pesoBiciKg),
         })
         .eq('user_id', userId)
       if (error) throw error
+
+      // El FTP no vive en el perfil: cada test es una fila del historial (base normalizada).
+      if (ftpNuevoW !== '') {
+        const { error: ftpError } = await supabase
+          .from('ftp_historial')
+          .upsert({ user_id: userId, fecha: ftpFecha, ftp_w: Number(ftpNuevoW) }, { onConflict: 'user_id,fecha' })
+        if (ftpError) throw ftpError
+        setFtpNuevoW('')
+      }
+
       setEstadoFisico({ tipo: 'ok', texto: 'Datos guardados.' })
       onSynced?.()
     } catch (err) {
@@ -207,16 +219,44 @@ export default function Settings({ onClose, onSynced, avisoInicial, userId, perf
               />
             </label>
             <label className="login-label">
-              FTP real (W) — de una prueba, no un estimado
+              Peso de la bici (kg) — opcional
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                value={pesoBiciKg}
+                onChange={(e) => setPesoBiciKg(e.target.value)}
+                className="login-input"
+              />
+            </label>
+            <label className="login-label">
+              Registrar nuevo test de FTP (W) — de una prueba real, no un estimado
+              {perfil?.ftp_actual_w != null && (
+                <span className="chart-sub">
+                  Último registrado: {perfil.ftp_actual_w} W ({perfil.ftp_actual_fecha})
+                </span>
+              )}
               <input
                 type="number"
                 step="1"
                 min="0"
-                value={ftpActualW}
-                onChange={(e) => setFtpActualW(e.target.value)}
+                value={ftpNuevoW}
+                onChange={(e) => setFtpNuevoW(e.target.value)}
                 className="login-input"
+                placeholder="Dejalo vacío si no hay test nuevo"
               />
             </label>
+            {ftpNuevoW !== '' && (
+              <label className="login-label">
+                Fecha del test
+                <input
+                  type="date"
+                  value={ftpFecha}
+                  onChange={(e) => setFtpFecha(e.target.value)}
+                  className="login-input"
+                />
+              </label>
+            )}
 
             {estadoFisico && (
               <p className={estadoFisico.tipo === 'error' ? 'error-text login-msg' : 'loading-text login-msg'}>
