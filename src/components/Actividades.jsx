@@ -58,7 +58,7 @@ export default function Actividades({ data }) {
               return (
                 <tr key={a.strava_id}>
                   <td>{a.start_local}</td>
-                  <td>{a.nombre || '—'}</td>
+                  <td className="wrap">{a.nombre || '—'}</td>
                   <td>{nombreDeporte(a.deporte)}</td>
                   <td className="num">{a.distancia_km != null ? `${a.distancia_km} km` : '—'}</td>
                   <td className="num">

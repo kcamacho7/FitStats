@@ -38,7 +38,7 @@ export default function MejoresMarcas({ data }) {
                     return (
                       <tr key={f.start_local + f.name}>
                         <td>{f.start_local}</td>
-                        <td>{f.name}</td>
+                        <td className="wrap">{f.name}</td>
                         <td className="num">{f.distance_km} km</td>
                         <td className="num">{Math.round((f.moving_time_min / 60) * 10) / 10} h</td>
                         <td className="num">{ind ? ind.value : '—'}</td>
