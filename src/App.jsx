@@ -14,6 +14,7 @@ import CompletarPerfil from './components/CompletarPerfil'
 import Admin from './components/Admin'
 import TopbarMenu from './components/TopbarMenu'
 import FiltroDeporte from './components/FiltroDeporte'
+import AnalisisIA from './components/AnalisisIA'
 import { useAuth, nombreSugerido } from './hooks/useAuth'
 import { useCiclismoData } from './hooks/useCiclismoData'
 import { supabase } from './lib/supabaseClient'
@@ -164,6 +165,8 @@ function App() {
           <Hero data={data} />
 
           <main>
+            <AnalisisIA data={data} onCambio={() => setRefreshKey((k) => k + 1)} />
+
             <section className="section">
               <h2>Estado físico</h2>
               {data.wellness_diario.length > 0 ? (
