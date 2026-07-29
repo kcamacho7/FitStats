@@ -133,6 +133,9 @@ export default function Settings({ onClose, onSynced, avisoInicial, userId, perf
     setEstadoStrava(null)
     try {
       const data = await llamarFuncion('sincronizar-strava', { forzar_historico: true })
+      // Si intervals.icu está conectado, también re-enriquece el histórico completo
+      // (decoupling, factor de eficiencia, GAP, compliance) — best-effort.
+      llamarFuncion('sincronizar-intervals', { forzar_historico: true }).catch(() => {})
       setEstadoStrava({
         tipo: 'ok',
         texto: `Histórico completo (${data.meses.length} mes(es)): ${data.salidas} salidas, ${data.km} km, ${data.horas} h. ${data.fondosNuevos ? `${data.fondosNuevos} marca(s) en el top.` : ''}`,
