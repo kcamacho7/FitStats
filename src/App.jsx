@@ -168,7 +168,8 @@ function App() {
                 <>
                   <p className="section-sub">
                     Fitness/Fatiga/Forma calculados desde tu histórico de entrenamiento — lo más dinámico día a día.
-                    Sin datos de sueño, HRV o FC en reposo si tu cuenta no los tiene registrados todavía.
+                    Sueño, HRV y FC en reposo se muestran acá abajo si tu cuenta de intervals.icu los tiene
+                    registrados.
                   </p>
                   <WellnessStats data={data} />
                   <WellnessChart data={data} />

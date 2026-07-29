@@ -588,14 +588,15 @@ main {
 }
 
 .topbar-logo {
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
 }
 
 .topbar-brand-name {
   font-family: var(--font-heading);
   font-weight: 700;
+  font-size: 18px;
   letter-spacing: 0.02em;
   color: var(--text-primary);
 }
