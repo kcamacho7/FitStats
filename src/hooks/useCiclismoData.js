@@ -29,7 +29,7 @@ export function useCiclismoData(userId, refreshKey = 0) {
           supabase.from('carreras').select('*').order('proxima_edicion'),
           supabase.from('plan_vs_actual').select('*').order('fecha'),
           supabase.from('wellness_diario').select('*').order('fecha'),
-          supabase.from('actividades').select('*').order('start_local', { ascending: false }).limit(200),
+          supabase.from('actividades').select('*').eq('es_duplicado', false).order('start_local', { ascending: false }).limit(200),
           supabase.from('ftp_historial').select('*').order('fecha', { ascending: false }),
           supabase.from('analisis_ia').select('*').order('created_at', { ascending: false }).limit(10),
         ])
