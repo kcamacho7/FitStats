@@ -1,15 +1,22 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 
 // RLS ya filtra cada tabla por auth.uid() = user_id — no hace falta .eq('user_id', ...) explícito.
 export function useCiclismoData(userId, refreshKey = 0) {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
+  const usuarioAnteriorRef = useRef(null)
 
   useEffect(() => {
     if (!userId) return
     let cancelado = false
-    setData(null)
+    // Solo vaciamos data en la carga inicial o si cambió el usuario — un refresco de
+    // fondo (sync al ingresar, onCambio de algún componente) no debe hacer parpadear
+    // todo el dashboard a la pantalla de carga ni resetear el scroll del usuario.
+    if (usuarioAnteriorRef.current !== userId) {
+      setData(null)
+    }
+    usuarioAnteriorRef.current = userId
     setError(null)
 
     async function cargar() {

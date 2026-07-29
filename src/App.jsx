@@ -97,7 +97,8 @@ function App() {
 
       supabase.from('eventos_uso').insert({ user_id: user.id, tipo: 'login' }).then(() => {})
       await Promise.all([llamar('sincronizar-strava'), llamar('sincronizar-intervals')])
-      await llamar('calcular-resumen-periodico')
+      // Estas dos dependen de que 'actividades' ya esté fresco (paso anterior).
+      await Promise.all([llamar('calcular-resumen-periodico'), llamar('actualizar-plan-ejecutado')])
       if (!cancelado) setRefreshKey((k) => k + 1)
     }
 
