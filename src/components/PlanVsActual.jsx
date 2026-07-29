@@ -85,7 +85,6 @@ export default function PlanVsActual({ data, onCambio }) {
           ref={inputRef}
           type="file"
           accept="image/*"
-          capture="environment"
           onChange={subirCaptura}
           style={{ display: 'none' }}
         />
