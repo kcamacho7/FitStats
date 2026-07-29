@@ -530,6 +530,15 @@ main {
   font-variant-numeric: tabular-nums;
 }
 
+/* Columnas con texto libre (ej. nombre de sesión planificada) pueden traer
+   descripciones largas — envolver el texto en vez de forzar el ancho de toda
+   la tabla, que en móvil obligaba a scrollear horizontal para ver cualquier dato. */
+.data-table td.wrap {
+  white-space: normal;
+  max-width: 260px;
+  word-break: break-word;
+}
+
 .estado-badge {
   font-size: 11px;
   font-weight: 600;

@@ -130,7 +130,7 @@ export default function PlanVsActual({ data, onCambio }) {
                 return (
                   <tr key={r.fecha}>
                     <td>{r.fecha}</td>
-                    <td>{r.workout_name || '—'}</td>
+                    <td className="wrap">{r.workout_name || '—'}</td>
                     <td className="num">{r.planned_time_min ?? '—'}</td>
                     <td className="num">{r.actual_time_min ? Math.round(r.actual_time_min) : '—'}</td>
                     <td className="num">{pct != null ? `${pct}%` : '—'}</td>

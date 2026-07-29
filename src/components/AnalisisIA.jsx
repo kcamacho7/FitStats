@@ -4,14 +4,23 @@ import Spinner from './Spinner'
 
 const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
 const COOLDOWN_DIAS = 7
+const LARGO_RESUMEN = 240
 
 function formatearFecha(fechaISO) {
   return new Date(fechaISO + 'T00:00:00').toLocaleDateString('es-CR', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
+function resumenCorto(texto) {
+  if (!texto || texto.length <= LARGO_RESUMEN) return texto
+  const corte = texto.slice(0, LARGO_RESUMEN)
+  const ultimoEspacio = corte.lastIndexOf(' ')
+  return `${corte.slice(0, ultimoEspacio > 20 ? ultimoEspacio : LARGO_RESUMEN)}…`
+}
+
 export default function AnalisisIA({ data, onCambio }) {
   const [generando, setGenerando] = useState(false)
   const [error, setError] = useState(null)
+  const [expandido, setExpandido] = useState(false)
   const analisis = data.analisis_ia || []
   const ultimo = analisis[0] ?? null
   const anteriores = analisis.slice(1)
@@ -54,7 +63,19 @@ export default function AnalisisIA({ data, onCambio }) {
             {formatearFecha(ultimo.periodo_desde)} a {formatearFecha(ultimo.periodo_hasta)}
           </h3>
           <p className="chart-sub">Generado el {formatearFecha(ultimo.created_at.slice(0, 10))}</p>
-          <p style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>{ultimo.contenido}</p>
+          <p style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+            {expandido ? ultimo.contenido : resumenCorto(ultimo.contenido)}
+          </p>
+          {ultimo.contenido.length > LARGO_RESUMEN && (
+            <button
+              type="button"
+              className="login-btn login-btn-secondary"
+              style={{ marginTop: 12 }}
+              onClick={() => setExpandido((v) => !v)}
+            >
+              {expandido ? 'Ver menos' : 'Ver todo el análisis'}
+            </button>
+          )}
         </div>
       ) : (
         <p className="section-sub">Todavía no generaste ningún análisis.</p>
