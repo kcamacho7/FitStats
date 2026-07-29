@@ -42,7 +42,7 @@ export default function AnalisisIA({ data, onCambio }) {
 
   return (
     <section className="section">
-      <h2>Análisis de Claude</h2>
+      <h2>FitStats IA</h2>
       <p className="section-sub">
         Generado por IA a partir de tus datos reales de entrenamiento. No reemplaza a tu entrenador — es una lectura
         objetiva para contrastar con él, no una instrucción de entrenamiento.
