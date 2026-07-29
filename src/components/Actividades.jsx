@@ -21,13 +21,23 @@ export default function Actividades({ data }) {
 
   const mostradas = actividades.slice(0, visibles)
 
+  // VO2max no existe por actividad en Strava ni intervals.icu (verificado en vivo) — solo
+  // como valor diario. Se muestra acá como referencia del día, cruzando por fecha con
+  // wellness_diario, no como una medición de esa sesión puntual.
+  const vo2maxPorFecha = new Map(
+    (data.wellness_diario || [])
+      .filter((w) => w.vo2max != null)
+      .map((w) => [w.fecha, w.vo2max]),
+  )
+
   return (
     <section className="section">
       <h2>Actividades recientes</h2>
       <p className="section-sub">
         Registro individual de cada actividad sincronizada desde Strava — las {actividades.length} más recientes.
         Decoupling (desacople cardíaco), EF (factor de eficiencia), Ritmo GAP y Cumplimiento del plan vienen de
-        intervals.icu si está conectado.
+        intervals.icu si está conectado. VO2max es el valor de ese día (no existe por actividad en ninguna API),
+        cuando tu dispositivo lo reporta.
       </p>
       <div className="table-wrap">
         <table className="data-table">
@@ -47,6 +57,7 @@ export default function Actividades({ data }) {
               <th className="num">Decoupling</th>
               <th className="num">EF</th>
               <th className="num">Cumplimiento</th>
+              <th className="num">VO2max (día)</th>
             </tr>
           </thead>
           <tbody>
@@ -73,6 +84,7 @@ export default function Actividades({ data }) {
                   <td className="num">{a.decoupling != null ? `${a.decoupling}%` : '—'}</td>
                   <td className="num">{a.factor_eficiencia ?? '—'}</td>
                   <td className="num">{a.compliance != null ? `${a.compliance}%` : '—'}</td>
+                  <td className="num">{vo2maxPorFecha.get(a.start_local) ?? '—'}</td>
                 </tr>
               )
             })}
