@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import Hero from './components/Hero'
 import Timeline from './components/Timeline'
 import VolumenSection from './components/VolumenSection'
@@ -9,12 +9,15 @@ import PlanVsActual from './components/PlanVsActual'
 import WellnessStats from './components/WellnessStats'
 import WellnessChart from './components/WellnessChart'
 import Login from './components/Login'
-import Settings from './components/Settings'
-import CompletarPerfil from './components/CompletarPerfil'
-import Admin from './components/Admin'
 import TopbarMenu from './components/TopbarMenu'
 import FiltroDeporte from './components/FiltroDeporte'
 import AnalisisIA from './components/AnalisisIA'
+
+// Se cargan bajo demanda (modales/pantallas que no todos los logins abren) para no
+// sumar su peso al bundle inicial del login/dashboard.
+const Settings = lazy(() => import('./components/Settings'))
+const Admin = lazy(() => import('./components/Admin'))
+const CompletarPerfil = lazy(() => import('./components/CompletarPerfil'))
 import { useAuth, nombreSugerido } from './hooks/useAuth'
 import { useCiclismoData } from './hooks/useCiclismoData'
 import { supabase } from './lib/supabaseClient'
@@ -155,11 +158,13 @@ function App() {
       )}
 
       {!loading && !error && data && !data.tienePerfil && (
-        <CompletarPerfil
-          user={user}
-          nombreSugeridoInicial={nombreSugerido(user)}
-          onListo={() => setRefreshKey((k) => k + 1)}
-        />
+        <Suspense fallback={<div className="app-shell-center"><p className="loading-text">Cargando…</p></div>}>
+          <CompletarPerfil
+            user={user}
+            nombreSugeridoInicial={nombreSugerido(user)}
+            onListo={() => setRefreshKey((k) => k + 1)}
+          />
+        </Suspense>
       )}
 
       {!loading && !error && data && data.tienePerfil && (
@@ -219,16 +224,22 @@ function App() {
       )}
 
       {mostrarConfig && (
-        <Settings
-          onClose={() => setMostrarConfig(false)}
-          onSynced={() => setRefreshKey((k) => k + 1)}
-          avisoInicial={avisoStrava}
-          userId={user.id}
-          perfil={data?.perfil}
-        />
+        <Suspense fallback={null}>
+          <Settings
+            onClose={() => setMostrarConfig(false)}
+            onSynced={() => setRefreshKey((k) => k + 1)}
+            avisoInicial={avisoStrava}
+            userId={user.id}
+            perfil={data?.perfil}
+          />
+        </Suspense>
       )}
 
-      {mostrarAdmin && user.id === ADMIN_USER_ID && <Admin onClose={() => setMostrarAdmin(false)} />}
+      {mostrarAdmin && user.id === ADMIN_USER_ID && (
+        <Suspense fallback={null}>
+          <Admin onClose={() => setMostrarAdmin(false)} />
+        </Suspense>
+      )}
     </div>
   )
 }

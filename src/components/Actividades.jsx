@@ -30,14 +30,24 @@ export default function Actividades({ data }) {
       .map((w) => [w.fecha, w.vo2max]),
   )
 
+  // Cumplimiento: el compliance de intervals.icu requiere que la actividad tenga un workout
+  // planificado asignado dentro de intervals (verificado en vivo — casi siempre null en la
+  // práctica). Se reemplaza por el % ya calculado en Plan vs. ejecutado (actual/plan del día),
+  // cruzando por fecha igual que VO2max — es un valor del día, no de esa sesión puntual.
+  const cumplimientoPorFecha = new Map(
+    (data.plan_vs_actual || [])
+      .filter((r) => r.actual_time_min != null && r.planned_time_min)
+      .map((r) => [r.fecha, Math.round((Number(r.actual_time_min) / Number(r.planned_time_min)) * 1000) / 10]),
+  )
+
   return (
     <section className="section">
       <h2>Actividades recientes</h2>
       <p className="section-sub">
         Registro individual de cada actividad sincronizada desde Strava — las {actividades.length} más recientes.
-        Decoupling (desacople cardíaco), EF (factor de eficiencia), Ritmo GAP y Cumplimiento del plan vienen de
-        intervals.icu si está conectado. VO2max es el valor de ese día (no existe por actividad en ninguna API),
-        cuando tu dispositivo lo reporta.
+        Decoupling (desacople cardíaco), EF (factor de eficiencia) y Ritmo GAP vienen de intervals.icu si está
+        conectado. Cumplimiento es el % del día en Plan vs. ejecutado. VO2max es el valor de ese día (no existe por
+        actividad en ninguna API), cuando tu dispositivo lo reporta.
       </p>
       <div className="table-wrap">
         <table className="data-table">
@@ -56,7 +66,7 @@ export default function Actividades({ data }) {
               <th className="num">Ritmo GAP</th>
               <th className="num">Decoupling</th>
               <th className="num">EF</th>
-              <th className="num">Cumplimiento</th>
+              <th className="num">Cumplimiento (día)</th>
               <th className="num">VO2max (día)</th>
             </tr>
           </thead>
@@ -83,7 +93,9 @@ export default function Actividades({ data }) {
                   <td className="num">{formatearGap(a.ritmo_gap) ?? '—'}</td>
                   <td className="num">{a.decoupling != null ? `${a.decoupling}%` : '—'}</td>
                   <td className="num">{a.factor_eficiencia ?? '—'}</td>
-                  <td className="num">{a.compliance != null ? `${a.compliance}%` : '—'}</td>
+                  <td className="num">
+                    {cumplimientoPorFecha.has(a.start_local) ? `${cumplimientoPorFecha.get(a.start_local)}%` : '—'}
+                  </td>
                   <td className="num">{vo2maxPorFecha.get(a.start_local) ?? '—'}</td>
                 </tr>
               )
