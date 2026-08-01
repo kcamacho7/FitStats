@@ -9,12 +9,24 @@ function valorO(valor, sufijo = '') {
   return valor != null ? `${valor}${sufijo}` : '—'
 }
 
-export default function RaceCards({ data, userId, onCambio }) {
+const hoy = () => new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString().slice(0, 10)
+
+function delta(actual, referencia, sufijo = '', invertido = false) {
+  if (actual == null || referencia == null) return null
+  const diff = Math.round((actual - referencia) * 10) / 10
+  if (diff === 0) return null
+  const mejora = invertido ? diff < 0 : diff > 0
+  const signo = diff > 0 ? '+' : ''
+  return { texto: `${signo}${diff}${sufijo} vs. referencia`, mejora }
+}
+
+export default function RaceCards({ data, onCambio }) {
   const [carrera, setCarrera] = useState('')
   const [proximaEdicion, setProximaEdicion] = useState('')
   const [fecha2025, setFecha2025] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [borrandoId, setBorrandoId] = useState(null)
+  const [buscandoId, setBuscandoId] = useState(null)
   const [error, setError] = useState(null)
 
   const agregar = async (e) => {
@@ -48,6 +60,26 @@ export default function RaceCards({ data, userId, onCambio }) {
       onCambio?.()
     } finally {
       setBorrandoId(null)
+    }
+  }
+
+  const buscarResultado = async (id) => {
+    setBuscandoId(id)
+    setError(null)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const resp = await fetch(`${FUNCTIONS_URL}/actualizar-resultado-carrera`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ carrera_id: id }),
+      })
+      const json = await resp.json()
+      if (!resp.ok) throw new Error(json.error || 'Error desconocido')
+      onCambio?.()
+    } catch (err) {
+      setError(err.message || 'No se pudo buscar el resultado')
+    } finally {
+      setBuscandoId(null)
     }
   }
 
@@ -85,6 +117,43 @@ export default function RaceCards({ data, userId, onCambio }) {
             ...(ind ? [{ label: ind.label, value: ind.value }] : []),
           ]
 
+          const tieneActual = c.distancia_km_actual != null
+          const pctFtpActual =
+            c.potencia_prom_w_actual != null && c.ftp_real_vigente_w_actual
+              ? Math.round((Number(c.potencia_prom_w_actual) / Number(c.ftp_real_vigente_w_actual)) * 1000) / 10
+              : null
+          const indActual = tieneActual
+            ? indicadorSecundario(c.deporte, { distancia_km: c.distancia_km_actual, moving_time_min: c.tiempo_min_actual })
+            : null
+          const deltaTiempo = tieneActual
+            ? delta(c.tiempo_min_actual, c.tiempo_min, ' min', true)
+            : null
+          const celdasActual = tieneActual
+            ? [
+                { label: `Edición ${c.proxima_edicion}`, value: valorO(c.proxima_edicion) },
+                { label: 'Distancia', value: valorO(c.distancia_km_actual, ' km') },
+                {
+                  label: 'Tiempo',
+                  value: c.tiempo_min_actual != null ? `${Math.round((c.tiempo_min_actual / 60) * 10) / 10} h` : '—',
+                },
+                ...(deltaTiempo
+                  ? [{ label: 'Diferencia', value: deltaTiempo.texto, accent: true, mejora: deltaTiempo.mejora }]
+                  : []),
+                {
+                  label: 'FC promedio',
+                  value: <>{valorO(c.fc_prom_actual)} <span className="unit">bpm</span></>,
+                },
+                ...(c.potencia_prom_w_actual != null
+                  ? [{ label: 'Potencia promedio', value: <>{c.potencia_prom_w_actual} <span className="unit">W</span></> }]
+                  : []),
+                ...(pctFtpActual != null
+                  ? [{ label: '% FTP real', value: `${pctFtpActual}%`, accent: true }]
+                  : []),
+                ...(indActual ? [{ label: indActual.label, value: indActual.value }] : []),
+              ]
+            : []
+          const puedeBuscarResultado = !tieneActual && c.proxima_edicion <= hoy()
+
           return (
             <article key={c.id} className="race-card">
               <header>
@@ -110,6 +179,35 @@ export default function RaceCards({ data, userId, onCambio }) {
                   </div>
                 ))}
               </div>
+
+              {tieneActual && (
+                <div className="race-stats" style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--border-color, #333)' }}>
+                  {celdasActual.map((celda) => (
+                    <div key={celda.label}>
+                      <span className="race-stat-label">{celda.label}</span>
+                      <span
+                        className={`race-stat-value ${celda.accent ? 'race-stat-accent' : ''}`}
+                        style={celda.mejora === true ? { color: 'var(--good-color, #4caf50)' } : celda.mejora === false ? { color: 'var(--warning-color, #e57373)' } : undefined}
+                      >
+                        {celda.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {puedeBuscarResultado && (
+                <button
+                  type="button"
+                  className="login-btn login-btn-secondary"
+                  style={{ marginTop: 12 }}
+                  disabled={buscandoId === c.id}
+                  onClick={() => buscarResultado(c.id)}
+                >
+                  {buscandoId === c.id && <Spinner />}
+                  Buscar resultado en Strava
+                </button>
+              )}
             </article>
           )
         })}
