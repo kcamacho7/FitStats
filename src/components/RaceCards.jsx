@@ -31,6 +31,34 @@ function mapaVo2max(wellnessDiario) {
   )
 }
 
+function esFilaTabla(linea) {
+  return /^\s*\|.*\|\s*$/.test(linea)
+}
+
+function esSeparadorTabla(linea) {
+  return esFilaTabla(linea) && /^[\s|:-]+$/.test(linea)
+}
+
+function partirFilaTabla(linea) {
+  return linea.trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map((c) => c.trim())
+}
+
+// El análisis de la IA viene en texto plano con dos tablas markdown embebidas (ver prompt
+// de generar-analisis-carrera) — esto separa el contenido en bloques por línea en blanco y
+// renderiza como <table> real los que son una tabla, y como párrafo el resto.
+function bloquesDeContenido(texto) {
+  return texto.split(/\n{2,}/).filter((b) => b.trim() !== '')
+}
+
+function parsearTabla(bloque) {
+  const lineas = bloque.split('\n').filter((l) => l.trim() !== '')
+  if (lineas.length < 2 || !lineas.every(esFilaTabla)) return null
+  const encabezados = partirFilaTabla(lineas[0])
+  const filasDatos = esSeparadorTabla(lineas[1]) ? lineas.slice(2) : lineas.slice(1)
+  const filas = filasDatos.map(partirFilaTabla)
+  return { encabezados, filas }
+}
+
 export default function RaceCards({ data, onCambio }) {
   const [carrera, setCarrera] = useState('')
   const [proximaEdicion, setProximaEdicion] = useState('')
@@ -320,7 +348,38 @@ export default function RaceCards({ data, onCambio }) {
                 ✕
               </button>
             </div>
-            <p style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>{analisisAbierto.contenido}</p>
+            {bloquesDeContenido(analisisAbierto.contenido).map((bloque, i) => {
+              const tabla = parsearTabla(bloque)
+              if (tabla) {
+                return (
+                  <div key={i} className="table-wrap" style={{ margin: '12px 0' }}>
+                    <table className="data-table">
+                      <thead>
+                        <tr>
+                          {tabla.encabezados.map((encabezado, j) => (
+                            <th key={j}>{encabezado}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tabla.filas.map((fila, j) => (
+                          <tr key={j}>
+                            {fila.map((celda, k) => (
+                              <td key={k}>{celda}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )
+              }
+              return (
+                <p key={i} style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
+                  {bloque}
+                </p>
+              )
+            })}
           </div>
         </div>
       )}
