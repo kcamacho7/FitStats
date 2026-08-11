@@ -44,15 +44,37 @@ function partirFilaTabla(linea) {
 }
 
 // El análisis de la IA viene en texto plano con dos tablas markdown embebidas (ver prompt
-// de generar-analisis-carrera) — esto separa el contenido en bloques por línea en blanco y
-// renderiza como <table> real los que son una tabla, y como párrafo el resto.
-function bloquesDeContenido(texto) {
-  return texto.split(/\n{2,}/).filter((b) => b.trim() !== '')
+// de generar-analisis-carrera). Se agrupa línea por línea en vez de confiar en que el modelo
+// siempre deje una línea en blanco exacta antes/después de cada tabla — así un título pegado
+// a la tabla (un solo salto de línea) queda como párrafo aparte en vez de tirar toda la tabla
+// a texto plano, y una línea en blanco de más DENTRO de una tabla no la corta a la mitad.
+function segmentarContenido(texto) {
+  const segmentos = []
+  let actual = null
+
+  for (const lineaCruda of texto.split('\n')) {
+    const linea = lineaCruda.trim()
+    if (linea === '') {
+      if (actual?.tipo === 'texto') {
+        segmentos.push(actual)
+        actual = null
+      }
+      continue
+    }
+    const tipo = esFilaTabla(linea) ? 'tabla' : 'texto'
+    if (actual && actual.tipo === tipo) {
+      actual.lineas.push(linea)
+    } else {
+      if (actual) segmentos.push(actual)
+      actual = { tipo, lineas: [linea] }
+    }
+  }
+  if (actual) segmentos.push(actual)
+  return segmentos
 }
 
-function parsearTabla(bloque) {
-  const lineas = bloque.split('\n').filter((l) => l.trim() !== '')
-  if (lineas.length < 2 || !lineas.every(esFilaTabla)) return null
+function parsearTabla(lineas) {
+  if (lineas.length < 2) return null
   const encabezados = partirFilaTabla(lineas[0])
   const filasDatos = esSeparadorTabla(lineas[1]) ? lineas.slice(2) : lineas.slice(1)
   const filas = filasDatos.map(partirFilaTabla)
@@ -348,8 +370,8 @@ export default function RaceCards({ data, onCambio }) {
                 ✕
               </button>
             </div>
-            {bloquesDeContenido(analisisAbierto.contenido).map((bloque, i) => {
-              const tabla = parsearTabla(bloque)
+            {segmentarContenido(analisisAbierto.contenido).map((segmento, i) => {
+              const tabla = segmento.tipo === 'tabla' ? parsearTabla(segmento.lineas) : null
               if (tabla) {
                 return (
                   <div key={i} className="table-wrap" style={{ margin: '12px 0' }}>
@@ -376,7 +398,7 @@ export default function RaceCards({ data, onCambio }) {
               }
               return (
                 <p key={i} style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>
-                  {bloque}
+                  {segmento.lineas.join('\n')}
                 </p>
               )
             })}
