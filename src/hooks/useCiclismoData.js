@@ -21,7 +21,7 @@ export function useCiclismoData(userId, refreshKey = 0) {
 
     async function cargar() {
       try {
-        const [perfilRes, hitosRes, volumenRes, fondosRes, carrerasRes, planRes, wellnessRes, actividadesRes, ftpRes, analisisRes] = await Promise.all([
+        const [perfilRes, hitosRes, volumenRes, fondosRes, carrerasRes, planRes, wellnessRes, actividadesRes, ftpRes, analisisRes, analisisCarreraRes] = await Promise.all([
           supabase.from('perfil').select('*').eq('user_id', userId).maybeSingle(),
           supabase.from('hitos').select('*').order('fecha'),
           supabase.from('volumen_mensual').select('*').order('mes'),
@@ -32,9 +32,10 @@ export function useCiclismoData(userId, refreshKey = 0) {
           supabase.from('actividades').select('*').eq('es_duplicado', false).order('start_local', { ascending: false }).limit(200),
           supabase.from('ftp_historial').select('*').order('fecha', { ascending: false }),
           supabase.from('analisis_ia').select('*').order('created_at', { ascending: false }).limit(10),
+          supabase.from('analisis_carrera').select('*'),
         ])
 
-        for (const r of [perfilRes, hitosRes, volumenRes, fondosRes, carrerasRes, planRes, wellnessRes, actividadesRes, ftpRes, analisisRes]) {
+        for (const r of [perfilRes, hitosRes, volumenRes, fondosRes, carrerasRes, planRes, wellnessRes, actividadesRes, ftpRes, analisisRes, analisisCarreraRes]) {
           if (r.error) throw r.error
         }
 
@@ -90,6 +91,7 @@ export function useCiclismoData(userId, refreshKey = 0) {
           wellness_diario: wellness,
           actividades: actividadesRes.data,
           analisis_ia: analisisRes.data,
+          analisis_carrera: analisisCarreraRes.data,
         })
       } catch (e) {
         if (!cancelado) setError(e)

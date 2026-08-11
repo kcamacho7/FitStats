@@ -20,6 +20,17 @@ function delta(actual, referencia, sufijo = '', invertido = false) {
   return { texto: `${signo}${diff}${sufijo} vs. referencia`, mejora }
 }
 
+// VO2max no existe por competencia en Strava ni intervals.icu — solo como valor diario. Se
+// muestra como referencia del día de la competencia, cruzando por fecha con wellness_diario,
+// igual que en Actividades recientes.
+function mapaVo2max(wellnessDiario) {
+  return new Map(
+    (wellnessDiario || [])
+      .filter((w) => w.vo2max != null)
+      .map((w) => [w.fecha, w.vo2max]),
+  )
+}
+
 export default function RaceCards({ data, onCambio }) {
   const [carrera, setCarrera] = useState('')
   const [proximaEdicion, setProximaEdicion] = useState('')
@@ -28,6 +39,10 @@ export default function RaceCards({ data, onCambio }) {
   const [borrandoId, setBorrandoId] = useState(null)
   const [buscandoId, setBuscandoId] = useState(null)
   const [error, setError] = useState(null)
+  const [generandoAnalisisId, setGenerandoAnalisisId] = useState(null)
+  const [errorAnalisis, setErrorAnalisis] = useState(null)
+  const [errorAnalisisId, setErrorAnalisisId] = useState(null)
+  const [analisisAbierto, setAnalisisAbierto] = useState(null)
 
   const agregar = async (e) => {
     e.preventDefault()
@@ -83,12 +98,46 @@ export default function RaceCards({ data, onCambio }) {
     }
   }
 
+  const vo2maxPorFecha = mapaVo2max(data.wellness_diario)
+  const analisisPorCarreraId = new Map((data.analisis_carrera || []).map((a) => [a.carrera_id, a]))
+
+  // "Generar" solo llama a la IA la primera vez; una vez guardado, el botón pasa a
+  // "Consultar" y esto solo abre el modal con lo que ya está en `data` — sin red.
+  const generarOConsultarAnalisis = async (c) => {
+    const existente = analisisPorCarreraId.get(c.id)
+    if (existente) {
+      setAnalisisAbierto(existente)
+      return
+    }
+    setGenerandoAnalisisId(c.id)
+    setErrorAnalisis(null)
+    setErrorAnalisisId(null)
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const resp = await fetch(`${FUNCTIONS_URL}/generar-analisis-carrera`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+        body: JSON.stringify({ carrera_id: c.id }),
+      })
+      const json = await resp.json()
+      if (!resp.ok) throw new Error(json.error || 'Error desconocido')
+      setAnalisisAbierto(json.analisis)
+      onCambio?.()
+    } catch (err) {
+      setErrorAnalisis(err.message || 'No se pudo generar el análisis')
+      setErrorAnalisisId(c.id)
+    } finally {
+      setGenerandoAnalisisId(null)
+    }
+  }
+
   return (
     <section className="section">
       <h2>Líneas base de competencias</h2>
       <p className="section-sub">
         Métricas de referencia de cada competencia — para ciclismo, potencia y %FTP; para otros deportes, distancia,
-        tiempo y ritmo/velocidad.
+        tiempo y ritmo/velocidad. VO2max es el valor de ese día (no existe por competencia en ninguna API), cuando tu
+        dispositivo lo reporta.
       </p>
       <div className="race-grid">
         {data.carreras.map((c) => {
@@ -115,6 +164,7 @@ export default function RaceCards({ data, onCambio }) {
               ? [{ label: '% FTP real', value: `${pctFtp}%`, accent: true }]
               : []),
             ...(ind ? [{ label: ind.label, value: ind.value }] : []),
+            { label: 'VO2max (día)', value: valorO(vo2maxPorFecha.get(c.fecha_2025)) },
           ]
 
           const tieneActual = c.distancia_km_actual != null
@@ -125,6 +175,26 @@ export default function RaceCards({ data, onCambio }) {
           const indActual = tieneActual
             ? indicadorSecundario(c.deporte, { distancia_km: c.distancia_km_actual, moving_time_min: c.tiempo_min_actual })
             : null
+          // Comparativas normalizadas entre ediciones: no dependen de que la distancia del
+          // recorrido se mantenga igual año a año (a diferencia de comparar distancia/tiempo
+          // en bruto). Velocidad y potencia sí tienen una dirección de "mejora" objetiva; FC y
+          // %FTP son indicadores de esfuerzo/intensidad, no de rendimiento, así que se muestran
+          // sin color — es al deportista/entrenador a quien le toca interpretarlos.
+          const velocidadRef = ind?.label === 'Velocidad promedio' ? Number(String(ind.value).split(' ')[0]) : null
+          const velocidadActual = indActual?.label === 'Velocidad promedio' ? Number(String(indActual.value).split(' ')[0]) : null
+          const deltaVelocidad = velocidadActual != null && velocidadRef != null ? delta(velocidadActual, velocidadRef, ' km/h') : null
+          const deltaPotencia =
+            c.potencia_prom_w_actual != null && c.potencia_prom_w != null
+              ? delta(Number(c.potencia_prom_w_actual), Number(c.potencia_prom_w), ' W')
+              : null
+          const deltaFc =
+            c.fc_prom_actual != null && c.fc_prom != null
+              ? { texto: `${c.fc_prom_actual > c.fc_prom ? '+' : ''}${Math.round((c.fc_prom_actual - c.fc_prom) * 10) / 10} bpm vs. referencia` }
+              : null
+          const deltaPctFtp =
+            pctFtpActual != null && pctFtp != null
+              ? { texto: `${pctFtpActual > pctFtp ? '+' : ''}${Math.round((pctFtpActual - pctFtp) * 10) / 10}% vs. referencia` }
+              : null
           const deltaTiempo = tieneActual
             ? delta(c.tiempo_min_actual, c.tiempo_min, ' min', true)
             : null
@@ -150,6 +220,15 @@ export default function RaceCards({ data, onCambio }) {
                   ? [{ label: '% FTP real', value: `${pctFtpActual}%`, accent: true }]
                   : []),
                 ...(indActual ? [{ label: indActual.label, value: indActual.value }] : []),
+                { label: 'VO2max (día)', value: valorO(vo2maxPorFecha.get(c.proxima_edicion)) },
+                ...(deltaVelocidad
+                  ? [{ label: 'Velocidad vs. referencia', value: deltaVelocidad.texto, mejora: deltaVelocidad.mejora }]
+                  : []),
+                ...(deltaPotencia
+                  ? [{ label: 'Potencia vs. referencia', value: deltaPotencia.texto, mejora: deltaPotencia.mejora }]
+                  : []),
+                ...(deltaFc ? [{ label: 'FC vs. referencia', value: deltaFc.texto }] : []),
+                ...(deltaPctFtp ? [{ label: '% FTP vs. referencia', value: deltaPctFtp.texto }] : []),
               ]
             : []
           const puedeBuscarResultado = !tieneActual && c.proxima_edicion <= hoy()
@@ -208,10 +287,43 @@ export default function RaceCards({ data, onCambio }) {
                   Buscar resultado en Strava
                 </button>
               )}
+
+              {tieneActual && (
+                <button
+                  type="button"
+                  className="login-btn login-btn-secondary"
+                  style={{ marginTop: 12 }}
+                  disabled={generandoAnalisisId === c.id}
+                  onClick={() => generarOConsultarAnalisis(c)}
+                >
+                  {generandoAnalisisId === c.id && <Spinner />}
+                  {analisisPorCarreraId.has(c.id) ? 'Consultar análisis de la carrera' : 'Generar análisis de la carrera'}
+                </button>
+              )}
+              {errorAnalisis && errorAnalisisId === c.id && <p className="error-text login-msg">{errorAnalisis}</p>}
             </article>
           )
         })}
       </div>
+
+      {analisisAbierto && (
+        <div className="settings-overlay" onClick={() => setAnalisisAbierto(null)}>
+          <div className="settings-card" onClick={(e) => e.stopPropagation()}>
+            <div className="settings-header">
+              <h2>Análisis de la carrera</h2>
+              <button
+                type="button"
+                className="settings-close"
+                onClick={() => setAnalisisAbierto(null)}
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+            </div>
+            <p style={{ whiteSpace: 'pre-line', lineHeight: 1.6 }}>{analisisAbierto.contenido}</p>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={agregar} className="login-form objetivo-form" style={{ marginTop: 20 }}>
         <label className="login-label">
