@@ -872,6 +872,12 @@ main {
   overflow-y: auto;
 }
 
+/* Variante más ancha para contenido con tablas (ej. análisis de carrera) — en mobile
+   sigue ajustándose a la pantalla porque width:100% y el padding del overlay ya lo acotan. */
+.settings-card-ancho {
+  max-width: 760px;
+}
+
 .settings-header {
   display: flex;
   align-items: center;

@@ -358,7 +358,7 @@ export default function RaceCards({ data, onCambio }) {
 
       {analisisAbierto && (
         <div className="settings-overlay" onClick={() => setAnalisisAbierto(null)}>
-          <div className="settings-card" onClick={(e) => e.stopPropagation()}>
+          <div className="settings-card settings-card-ancho" onClick={(e) => e.stopPropagation()}>
             <div className="settings-header">
               <h2>Análisis de la carrera</h2>
               <button
