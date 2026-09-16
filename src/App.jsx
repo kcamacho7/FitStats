@@ -24,7 +24,7 @@ import { supabase } from './lib/supabaseClient'
 import logoIcon from './assets/logo-icon.png'
 import './App.css'
 
-const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
+const FUNCTIONS_URL = 'https://fch-1.tail1161b6.ts.net:10000/functions/v1'
 const ADMIN_USER_ID = '2e46f380-ad94-4d76-9571-822804e6049a'
 const DEPORTES_CICLISMO = ['Ride', 'VirtualRide', 'EBikeRide']
 
