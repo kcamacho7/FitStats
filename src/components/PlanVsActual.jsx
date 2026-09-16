@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import Spinner from './Spinner'
 
-const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
+const FUNCTIONS_URL = 'https://fch-1.tail1161b6.ts.net:10000/functions/v1'
 const MAX_LADO = 1280
 
 // "Ejecutado" y "% cumplido" se derivan en vivo de los datos crudos (planned/actual),

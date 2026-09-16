@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabaseClient'
 import { indicadorSecundario } from '../lib/deportes'
 import Spinner from './Spinner'
 
-const FUNCTIONS_URL = 'https://ztawdtaymbrocphzenuo.supabase.co/functions/v1'
+const FUNCTIONS_URL = 'https://fch-1.tail1161b6.ts.net:10000/functions/v1'
 
 function valorO(valor, sufijo = '') {
   return valor != null ? `${valor}${sufijo}` : '—'
