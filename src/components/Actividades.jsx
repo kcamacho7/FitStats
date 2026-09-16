@@ -44,7 +44,7 @@ export default function Actividades({ data }) {
     <section className="section">
       <h2>Actividades recientes</h2>
       <p className="section-sub">
-        Registro individual de cada actividad sincronizada desde Strava — las {actividades.length} más recientes.
+        Registro individual de cada actividad sincronizada desde intervals.icu — las {actividades.length} más recientes.
         Decoupling (desacople cardíaco), EF (factor de eficiencia) y Ritmo GAP vienen de intervals.icu si está
         conectado. Cumplimiento es el % del día en Plan vs. ejecutado. VO2max es el valor de ese día (no existe por
         actividad en ninguna API), cuando tu dispositivo lo reporta.

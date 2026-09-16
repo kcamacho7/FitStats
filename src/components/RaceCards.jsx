@@ -334,7 +334,7 @@ export default function RaceCards({ data, onCambio }) {
                   onClick={() => buscarResultado(c.id)}
                 >
                   {buscandoId === c.id && <Spinner />}
-                  Buscar resultado en Strava
+                  Buscar resultado en intervals.icu
                 </button>
               )}
 
@@ -429,7 +429,7 @@ export default function RaceCards({ data, onCambio }) {
           />
         </label>
         <label className="login-label">
-          Fecha de la edición de referencia (para buscarla en Strava)
+          Fecha de la edición de referencia (para buscarla en intervals.icu)
           <input
             type="date"
             required
